@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %} {% endblock %}</title>
+<style>
+    body {
+        font-family: sans-serif;
+        background-color: #f2f2f2;
+    }
+
+    h2 {
+        text-align: center;
+        font-weight: bold;
+        margin-bottom: 24px;
+        padding: 16px;
+        border-bottom: 1px solid #ccc;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        border-radius: 4px;
+        margin-bottom: 24px;
+    }
+
+    th,
+    td {
+        padding: 12px;
+        text-align: center;
+        font-size: 14px;
+        border: 1px solid #ccc;
+    }
+
+    .product-list {
+        border: 1px solid #ccc;
+        padding: 24px;
+        margin-bottom: 24px;
+    }
+
+    .product-name {
+        font-weight: bold;
+    }
+</style>
+</head>
+<body>
+{% block content %}
+
+    <h2>Список продуктов</h2>
+
+    <table class="product-list">
+        <thead>
+            <tr>
+                <th>Наименование</th>
+                <th>Категория</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for product in products %}
+                <tr>
+                    <td class="product-name">{{ product.name }}</td>
+                    <td>{{ product.category}}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+{% endblock %}
+</body>
+</html>

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inventory Management System</title>
+
+  <link rel="stylesheet" href="indexstyle.css">
+</head>
+<body>
+
+  <header>
+    <h1>Inventory Management System</h1>
+  </header>
+
+  <main>
+
+    <section class="warehouses">
+      <h2>Warehouses</h2>
+      <ul>
+        {% for warehouse in warehouses %}
+          <li>{{ warehouse.address }}</li>
+        {% endfor %}
+      </ul>
+    </section>
+
+    <section class="offices">
+      <h2>Offices</h2>
+      <ul>
+        {% for office in offices %}
+          <li>{{ office.address }}</li>
+        {% endfor %}
+      </ul>
+    </section>
+
+    <section class="employees">
+      <h2>Employees</h2>
+      <ul>
+        {% for employee in employees %}
+          <li>{{ employee.name }} ({{ employee.email }})</li>
+        {% endfor %}
+      </ul>
+    </section>
+
+    <section class="products">
+      <h2>Products</h2>
+      <ul>
+        {% for product in products %}
+          <li>{{ product.name }}</li>
+        {% endfor %}
+      </ul>
+    </section>
+
+    <section class="orders">
+      <h2>Orders</h2>
+      <ul>
+        {% for order in orders %}
+          <li>{{ order.id }}: {{ order.product.name }} (Quantity: {{ order.quantity }})</li>
+        {% endfor %}
+      </ul>
+    </section>
+
+    <section class="components">
+      <h2>Components</h2>
+      <ul>
+        {% for component in components %}
+          <li>{{ component.name }}</li>
+        {% endfor %}
+      </ul>
+    </section>
+
+    <section class="arrival-of-components">
+      <h2>Arrival of Components</h2>
+      <ul>
+        {% for arrival_of_component in arrival_of_components %}
+          <li>{{ arrival_of_component.id }}: {{ arrival_of_component.component.name }} (Quantity: {{ arrival_of_component.quantity }})</li>
+        {% endfor %}
+      </ul>
+    </section>
+
+    <section class="warehouse-movements">
+      <h2>Warehouse Movements</h2>
+      <ul>
+        {% for warehouse_movement in warehouse_movements %}
+          <li>{{ warehouse_movement.id }}: {{ warehouse_movement.warehouse_from.name }} to {{ warehouse_movement.warehouse_to.name }} (Product: {{ warehouse_movement.product.name }})</li>
+        {% endfor %}
+      </ul>
+    </section>
+
+    <section class="complimentarys">
+      <h2>Complimentarys</h2>
+      <ul>
+        {% for complimentary in complimentarys %}
+          <li>{{ complimentary.id }}: Complimentary item: {{ complimentary.product.name }}</li>
+        {% endfor %}
+      </ul>
+    </section>
+
+    <section class="motions-from-products">
+      <h2>Motions from Products</h2>
+      <ul>
+        {% for motion_from_product in motions_from_products %}
+          <li>{{ motion_from_product.id }}: {{ motion_from_product.product.name }} sent to office: {{ motion_from_product.office.name }} (Quantity: {{ motion_from_product.quantity }})</li>
+        {% endfor %}
+      </ul>
+    </section>
+
+  </main>
+
+</body>
+</html>

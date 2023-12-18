@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block title %} Список Офисов {% endblock %}
+
+{% block content %}
+
+    <h2 style="text-align: center;">Список Офисов</h2>
+
+    <table class="table table-hover table-bordered" style="
+        border-collapse: collapse;
+        width: 100%;
+        margin: 0 auto;
+        table-layout: fixed;
+    ">
+        <thead>
+            <tr>
+                <th style="
+                    font-size: 18px;
+                    font-weight: bold;
+                    text-align: center;
+                    height: 50px;
+                    background-color: #f5f5f5;
+                ">Адрес</th>
+                <th style="
+                    font-size: 18px;
+                    font-weight: bold;
+                    text-align: center;
+                    height: 50px;
+                    background-color: #f5f5f5;
+                ">Район</th>
+                <th style="
+                    font-size: 18px;
+                    font-weight: bold;
+                    text-align: center;
+                    height: 50px;
+                    background-color: #f5f5f5;
+                ">Телефон</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for office in offices %}
+                <tr>
+                    <td style="
+                        padding: 10px;
+                        text-align: center;
+                        border: 1px solid #ccc;
+                        white-space: nowrap;
+                    ">{{ office.address }}</td>
+                    <td style="
+                        padding: 10px;
+                        text-align: center;
+                        border: 1px solid #ccc;
+                        white-space: nowrap;
+                    ">{{ office.area }}</td>
+                    <td style="
+                        padding: 10px;
+                        text-align: center;
+                        border: 1px solid #ccc;
+                        white-space: nowrap;
+                    ">{{ office.phone }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+{% endblock %}
