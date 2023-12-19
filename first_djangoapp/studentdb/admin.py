@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Warehouse, Office, Employee, Category, Product, Order, Components, ArrivalOfComponents, WarehouseMovement, Complimentary, MotionFromProduct
+from .models import Warehouse, Office, Employee, Category, Product, Order, Components, ArrivalOfComponents, WarehouseMovement, ProductsMovement
 
 admin.site.register (Warehouse)
 admin.site.register (Office)
@@ -10,6 +10,5 @@ admin.site.register (Order)
 admin.site.register (Components)
 admin.site.register (ArrivalOfComponents)
 admin.site.register (WarehouseMovement)
-admin.site.register (Complimentary)
-admin.site.register (MotionFromProduct)
+admin.site.register (ProductsMovement)
 # Register your models here.

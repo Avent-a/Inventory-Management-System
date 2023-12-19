@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inventory Management System</title>
+
+  <style>
+    /* Стили для шапки */
+    header {
+      background-color: #333;
+      color: #fff;
+      padding: 20px;
+    }
+
+    header h1 {
+      margin: 0;
+    }
+
+    /* Стили для секций */
+    section {
+      margin-bottom: 20px;
+    }
+
+    section h2 {
+      font-size: 20px;
+      margin: 0;
+    }
+
+    section ul {
+      list-style-type: none;
+      padding: 0;
+    }
+
+    section ul li {
+      margin-bottom: 10px;
+    }
+
+    /* Стили для ссылок */
+    a {
+      color: #333;
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    /* Стили для основного контейнера */
+    main {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+  </style>
+
+</head>
+
+<body>
+
+  <header>
+    <h1>Inventory Management System</h1>
+  </header>
+
+  <main>
+
+    <section class="warehouses">
+      <h2><a href="{% url 'warehouse' %}">Warehouses</a></h2>
+    </section>
+
+    <section class="offices">
+      <h2><a href="{% url 'offices' %}">Offices</a></h2>
+    </section>
+
+    <section class="employees">
+      <h2><a href="{% url 'employees' %}">Employees</a></h2>
+    </section>
+
+    <section class="products">
+      <h2><a href="{% url 'products' %}">Products</a></h2>
+    </section>
+
+    <section class="orders">
+      <h2><a href="{% url 'orders' %}">Orders</a></h2>
+    </section>
+
+    <section class="components">
+      <h2><a href="{% url 'components' %}">Components</a></h2>
+    </section>
+
+    <section class="arrival-of-components">
+      <h2><a href="{% url 'arrival_of_components' %}">Arrival of Components</a></h2>
+    </section>
+
+    <section class="warehouse-movements">
+      <h2><a href="{% url 'warehouse_movements' %}">Warehouse Movements</a></h2>
+    </section>
+
+    <section class="complimentarys">
+      <h2><a href="{% url 'products_movements' %}">products_movements</a></h2>
+    </section>
+
+
+  </main>
+
+</body>
+
+</html>

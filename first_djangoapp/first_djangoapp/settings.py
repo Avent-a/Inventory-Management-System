@@ -55,7 +55,12 @@ ROOT_URLCONF = 'first_djangoapp.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [r'/home/student/Documents/first_djangoapp/templates/list'],
+        'DIRS': [r'/home/student/Documents/first_djangoapp/templates',
+                 r'/home/student/Documents/first_djangoapp/templates/list',
+                 r'/home/student/Documents/first_djangoapp/templates/movement',
+                 r'/home/student/Documents/first_djangoapp/templates/list/add',
+                 r'/home/student/Documents/first_djangoapp/templates/movement/add'
+                ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

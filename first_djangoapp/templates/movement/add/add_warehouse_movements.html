@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Add Warehouse Movement</title>
+</head>
+
+<body>
+  <h1>Add Warehouse Movement</h1>
+  <form method="post" action="{% url 'add_warehouse_movement' %}">
+    {% csrf_token %}
+
+    <label for="id_warehouse_minus">Warehouse Minus:</label>
+    <select name="id_warehouse_minus">
+      {% for warehouse in warehouses %}
+      <option value="{{ warehouse.id }}">{{ warehouse.address }}</option>
+      {% endfor %}
+    </select>
+    <button type="submit" name="show_items">Show Warehouse Items</button><br><br>
+
+    <label for="component_name">Component Name:</label>
+    <select name="component_name" id="component_name" onchange="updateQuantity()">
+      {% for component in components %}
+      <option value="{{ component.id }}" data-quantity="{{ component.quantity }}">{{ component.name }}</option>
+      {% endfor %}
+    </select><br><br>
+
+    <label for="quantity">Quantity:</label>
+    <input type="number" name="quantity" id="quantity" value="{{ total_quantity }}" disabled>
+    <input type="checkbox" name="enable_edit" id="enable_edit" onchange="toggleEdit()">
+    <label for="enable_edit">Enable Edit</label><br><br>
+
+    <label for="id_warehouse_plus">Warehouse Plus:</label>
+    <select name="id_warehouse_plus">
+      {% for warehouse in warehouses %}
+      <option value="{{ warehouse.id }}">{{ warehouse.address }}</option>
+      {% endfor %}
+    </select><br><br>
+
+    <label for="date">Date:</label>
+    <input type="datetime-local" name="date" id="id_date" required><br><br>
+
+    <label for="comment">Comment:</label>
+    <input type="text" name="comment"><br><br>
+
+    <button type="submit" name="add_movement">Add Movement</button>
+    <a href="{% url 'warehouse_movements' %}"><button type="button">Go to home</button></a>
+  </form>
+
+  <!-- Display Warehouse Items -->
+  {% if components_arrival %}
+  <h2>Warehouse Items for Warehouse</h2>
+  <ul>
+    {% for component_arrival in components_arrival %}
+    <li>Warehouse {{ component_arrival.warehouse_address }}: {{ component_arrival.component_name }} - Quantity: {{ component_arrival.arrival_quantity }}</li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+
+  {% if messages %}
+  <ul class="messages">
+    {% for message in messages %}
+    <li{% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+
+  <script>
+    // Set the current date and time
+    document.getElementById('id_date').value = new Date().toISOString().slice(0, 16);
+
+    function updateQuantity() {
+      var componentSelect = document.getElementById('component_name');
+      var quantityInput = document.getElementById('quantity');
+      var selectedOption = componentSelect.options[componentSelect.selectedIndex];
+      var quantity = selectedOption.getAttribute('data-quantity');
+      quantityInput.value = quantity;
+    }
+
+    function toggleEdit() {
+      var quantityInput = document.getElementById('quantity');
+      var enableEditCheckbox = document.getElementById('enable_edit');
+      quantityInput.disabled = !enableEditCheckbox.checked;
+    }
+  </script>
+</body>
+
+</html>

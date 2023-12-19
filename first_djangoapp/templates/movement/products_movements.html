@@ -76,30 +76,37 @@
 <body>
   {% block content %}
 
-  <h2>Warehouse</h2>
+  <h2>products_movements</h2>
 
   <form>
     <table>
       <thead>
         <tr>
-          <th>Id</th>
-          <th>Address</th>
-          <th>Phone</th>
+          <th>ID</th>
+          <th>IdWarehouse</th>
+          <th>Date</th>
+          <th>Quantity</th>
+          <th>IdComponents</th>
+          <th>IdProduct</th>
+          <th>STATUS</th>
         </tr>
       </thead>
       <tbody>
-        {% for warehouse in warehouses %}
+        {% for product_movement in products_movements %}
         <tr>
-          <td>{{ warehouse.id }}</td>
-          <td>{{ warehouse.address }}</td>
-          <td>{{ warehouse.phone }}</td>
+          <td>{{ product_movement.id }}</td>
+          <td>{{ product_movement.IdWarehouse }}</td>
+          <td>{{ product_movement.datetime }}</td>
+          <td>{{ product_movement.quantity }}</td>
+          <td>{{ product_movement.IdComponents }}</td>
+          <td>{{ product_movement.IdProduct }}</td>
+          <td>{{ product_movement.ProductsMovement_STATUS_CHOICES  }}</td>
         </tr>
         {% endfor %}
       </tbody>
     </table>
-    
 
-    <a href="{% url 'add_warehouse' %}" class="btn btn-primary">Add Warehouse</a>
+    <button type="button" class="add-button">Добавить</button>
     <button type="button" class="remove-button">Удалить</button>
   </form>
   {% endblock %}

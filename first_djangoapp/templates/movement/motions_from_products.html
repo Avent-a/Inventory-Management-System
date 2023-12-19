@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -72,37 +71,36 @@
     }
   </style>
 </head>
-
 <body>
-  {% block content %}
-
-  <h2>Warehouse</h2>
-
-  <form>
-    <table>
-      <thead>
-        <tr>
-          <th>Id</th>
-          <th>Address</th>
-          <th>Phone</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for warehouse in warehouses %}
-        <tr>
-          <td>{{ warehouse.id }}</td>
-          <td>{{ warehouse.address }}</td>
-          <td>{{ warehouse.phone }}</td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-    
-
-    <a href="{% url 'add_warehouse' %}" class="btn btn-primary">Add Warehouse</a>
-    <button type="button" class="remove-button">Удалить</button>
-  </form>
-  {% endblock %}
-</body>
-
-</html>
+    {% block content %}
+  
+      <h2>Motions From Products</h2>
+  
+      <form>
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>IdProduct</th>
+              <th>IdEmployee</th>
+              <th>Quantity</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for motion_from_product in motions_from_products %}
+              <tr>
+                <td>{{ motion_from_product.id }}</td>
+                <td>{{ motion_from_product.IdProduct }}</td>
+                <td>{{ motion_from_product.IdEmplotee }}</td>
+                <td>{{ motion_from_product.quantity }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+  
+        <button type="button" class="add-button">Добавить</button>
+        <button type="button" class="remove-button">Удалить</button>
+      </form>
+    {% endblock %}
+  </body>
+  </html>
