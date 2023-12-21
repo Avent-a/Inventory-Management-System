@@ -105,7 +105,21 @@ def warehouse_movements(request):
         'warehouse_movements': warehouse_movements
     })
 
-def calculate_total_quantity(selected_component_id, selected_warehouse_minus_id):
+def calculate_total_quantity(selected_component_id, selected_warehouse_minus_id, selected_warehouse_plus_id):
+    warehouse_movement_quantity_minus = WarehouseMovement.objects.filter(
+        IdComponents_id=selected_component_id,
+        IdWarehouseMinus_id=selected_warehouse_minus_id
+    ).aggregate(
+        warehouse_movement_quantity_minus=Sum('quantity')
+    )['warehouse_movement_quantity_minus'] or 0
+
+    warehouse_movement_quantity_plus = WarehouseMovement.objects.filter(
+        IdComponents_id=selected_component_id,
+        IdWarehousePlus_id=selected_warehouse_plus_id
+    ).aggregate(
+        warehouse_movement_quantity_plus=Sum('quantity')
+    )['warehouse_movement_quantity_plus'] or 0
+
     products_movement_quantity = ProductsMovement.objects.filter(
         IdComponents_id=selected_component_id,
         IdWarehouse__id=selected_warehouse_minus_id,
@@ -122,7 +136,7 @@ def calculate_total_quantity(selected_component_id, selected_warehouse_minus_id)
         substitution_quantity=Sum('quantity')
     )['substitution_quantity'] or 0
 
-    total_quantity = products_movement_quantity - substitution_quantity
+    total_quantity = products_movement_quantity + warehouse_movement_quantity_plus  - substitution_quantity - warehouse_movement_quantity_minus 
 
     return total_quantity
 
@@ -130,12 +144,11 @@ def add_warehouse_movement(request):
     total_quantity = 0
 
     if request.method == 'POST':
-        # Логика отображения данных о складе
         if 'show_items' in request.POST:
             id_warehouse_minus = request.POST.get('id_warehouse_minus')
             selected_component_id = request.POST.get('component_name')
+            selected_warehouse_plus_id = request.POST.get('id_warehouse_plus')  # Добавлено
 
-            # Ваш SQL-запрос для отображения данных о складе
             query = '''
                 SELECT 
                     wm.id AS movement_id,
@@ -163,14 +176,11 @@ def add_warehouse_movement(request):
                 cursor.execute(query, [id_warehouse_minus, id_warehouse_minus, selected_component_id])
                 components_arrival = dictfetchall(cursor)
 
-            # Добавляем логику для вычисления общего количества
-            total_quantity = calculate_total_quantity(selected_component_id, id_warehouse_minus)
+            total_quantity = calculate_total_quantity(selected_component_id, id_warehouse_minus, selected_warehouse_plus_id)
 
             return render(request, 'add_warehouse_movements.html', {'warehouses': Warehouse.objects.all(), 'components_arrival': components_arrival, 'components': Components.objects.all(), 'total_quantity': total_quantity})
 
-        # Если нажата кнопка "Add Movement"
         elif 'add_movement' in request.POST:
-
             try:
                 selected_component_id = request.POST.get('component_name')
                 quantity = int(request.POST.get('quantity'))
@@ -183,12 +193,9 @@ def add_warehouse_movement(request):
                     messages.error(request, 'Пожалуйста, заполните все обязательные поля действительными значениями.')
                 else:
                     selected_component = Components.objects.get(id=selected_component_id)
-
-                    # Вычисляем общее количество перед сохранением
-                    total_quantity = calculate_total_quantity(selected_component_id, id_warehouse_minus)
+                    total_quantity = calculate_total_quantity(selected_component_id, id_warehouse_minus, id_warehouse_plus)
 
                     if request.POST.get('enable_edit') == 'on':
-                        # Если чекбокс включен, используем введенное пользователем значение
                         warehouse_movement = WarehouseMovement(
                             IdComponents=selected_component,
                             quantity=quantity,
