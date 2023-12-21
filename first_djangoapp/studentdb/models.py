@@ -65,18 +65,7 @@ class Components(models.Model):
     name = models.CharField(max_length=100, default=None)  # название комплектующего
     def __str__(self):
         return '{0}'.format(self.name)
-
-# Модель Прибытие компонентов
-class ArrivalOfComponents(models.Model):
-    id = models.AutoField(primary_key=True)
-    IdComponents = models.ForeignKey(Components, on_delete=models.CASCADE)
-    quantity = models.IntegerField()
-    datetime = models.DateTimeField(auto_now_add=True)  # Добавляем поле datetime
-    IdWarehouse = models.ForeignKey(Warehouse, on_delete=models.CASCADE)
-    def __str__(self):
-        return f'{self.IdComponents.name} - {self.quantity}'
     
-
 # Модель Складское перемещение
 class WarehouseMovement(models.Model):
     id = models.AutoField(primary_key=True)  # уникальный идентификатор

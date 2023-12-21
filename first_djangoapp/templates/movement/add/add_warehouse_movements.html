@@ -48,14 +48,22 @@
   </form>
 
   <!-- Display Warehouse Items -->
-  {% if components_arrival %}
-  <h2>Warehouse Items for Warehouse</h2>
-  <ul>
-    {% for component_arrival in components_arrival %}
-    <li>Warehouse {{ component_arrival.warehouse_address }}: {{ component_arrival.component_name }} - Quantity: {{ component_arrival.arrival_quantity }}</li>
-    {% endfor %}
-  </ul>
-  {% endif %}
+{% if components_arrival %}
+<h2>Warehouse Movements</h2>
+<ul>
+  {% for movement in components_arrival %}
+    <li>
+      Movement ID: {{ movement.movement_id }}<br>
+      From Warehouse: {{ movement.from_warehouse_address }}<br>
+      To Warehouse: {{ movement.to_warehouse_address }}<br>
+      Component Name: {{ movement.component_name }}<br>
+      Quantity: {{ movement.movement_quantity }}<br>
+      Date: {{ movement.movement_date }}<br>
+    </li>
+  {% endfor %}
+</ul>
+{% endif %}
+
 
   {% if messages %}
   <ul class="messages">

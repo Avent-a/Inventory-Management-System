@@ -31,7 +31,6 @@ urlpatterns = [
     path('employees/', views.employees, name='employees'),
     path('orders/', views.orders, name='orders'),
     path('components/', views.components, name='components'),
-    path('arrival_of_components/', views.arrival_of_components, name='arrival_of_components'),
     path('warehouse_movements/', views.warehouse_movements, name='warehouse_movements'),
     path('warehouse_movements/add', views.add_warehouse_movement, name='add_warehouse_movement'),
     path('products_movements/', views.products_movements, name='products_movements')
