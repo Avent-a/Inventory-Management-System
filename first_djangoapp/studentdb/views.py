@@ -105,7 +105,9 @@ def warehouse_movements(request):
         'warehouse_movements': warehouse_movements
     })
 
+# Функция для вычисления общего количества для выбранного компонента и складов
 def calculate_total_quantity(selected_component_id, selected_warehouse_minus_id, selected_warehouse_plus_id):
+    # Получаем сумму количества перемещений из склада минус для выбранного компонента
     warehouse_movement_quantity_minus = WarehouseMovement.objects.filter(
         IdComponents_id=selected_component_id,
         IdWarehouseMinus_id=selected_warehouse_minus_id
@@ -113,6 +115,7 @@ def calculate_total_quantity(selected_component_id, selected_warehouse_minus_id,
         warehouse_movement_quantity_minus=Sum('quantity')
     )['warehouse_movement_quantity_minus'] or 0
 
+    # Получаем сумму количества перемещений из склада плюс для выбранного компонента
     warehouse_movement_quantity_plus = WarehouseMovement.objects.filter(
         IdComponents_id=selected_component_id,
         IdWarehousePlus_id=selected_warehouse_plus_id
@@ -120,6 +123,7 @@ def calculate_total_quantity(selected_component_id, selected_warehouse_minus_id,
         warehouse_movement_quantity_plus=Sum('quantity')
     )['warehouse_movement_quantity_plus'] or 0
 
+    # Получаем сумму количества обновленных перемещений продукции для выбранного компонента
     products_movement_quantity = ProductsMovement.objects.filter(
         IdComponents_id=selected_component_id,
         IdWarehouse__id=selected_warehouse_minus_id,
@@ -128,6 +132,7 @@ def calculate_total_quantity(selected_component_id, selected_warehouse_minus_id,
         products_movement_quantity=Sum('quantity')
     )['products_movement_quantity'] or 0
 
+    # Получаем сумму количества перемещений продукции с заменой для выбранного компонента
     substitution_quantity = ProductsMovement.objects.filter(
         IdComponents_id=selected_component_id,
         IdWarehouse__id=selected_warehouse_minus_id,
@@ -136,88 +141,74 @@ def calculate_total_quantity(selected_component_id, selected_warehouse_minus_id,
         substitution_quantity=Sum('quantity')
     )['substitution_quantity'] or 0
 
-    total_quantity = products_movement_quantity + warehouse_movement_quantity_plus  - substitution_quantity - warehouse_movement_quantity_minus 
+    # Общее количество вычисляется как сумма плюс, минус и обновленных перемещений, с учетом замен
+    total_quantity = warehouse_movement_quantity_plus + products_movement_quantity - warehouse_movement_quantity_minus - substitution_quantity
 
     return total_quantity
 
+
+
+# Функция обработки запроса на добавление перемещения на склад
 def add_warehouse_movement(request):
+    # Инициализация переменной для хранения общего количества
     total_quantity = 0
 
+    # Проверка, был ли запрос методом POST
     if request.method == 'POST':
-        if 'show_items' in request.POST:
-            id_warehouse_minus = request.POST.get('id_warehouse_minus')
+        try:
+            # Получение данных из запроса для добавления нового перемещения
             selected_component_id = request.POST.get('component_name')
-            selected_warehouse_plus_id = request.POST.get('id_warehouse_plus')  # Добавлено
+            quantity_raw = request.POST.get('quantity')
+            quantity = int(quantity_raw) if quantity_raw is not None else 0
+            id_warehouse_plus = request.POST.get('id_warehouse_plus')
+            id_warehouse_minus = request.POST.get('id_warehouse_minus')
+            date = request.POST.get('date')
+            comment = request.POST.get('comment')
 
-            query = '''
-                SELECT 
-                    wm.id AS movement_id,
-                    wm.IdWarehouseMinus_id AS from_warehouse_id,
-                    from_warehouse.address AS from_warehouse_address,
-                    wm.IdWarehousePlus_id AS to_warehouse_id,
-                    to_warehouse.address AS to_warehouse_address,
-                    c.name AS component_name,
-                    wm.quantity AS movement_quantity,
-                    wm.date AS movement_date
-                FROM 
-                    studentdb_warehousemovement wm
-                JOIN 
-                    studentdb_components c ON wm.IdComponents_id = c.id
-                JOIN 
-                    studentdb_warehouse from_warehouse ON wm.IdWarehouseMinus_id = from_warehouse.id
-                JOIN 
-                    studentdb_warehouse to_warehouse ON wm.IdWarehousePlus_id = to_warehouse.id
-                WHERE 
-                    (wm.IdWarehouseMinus_id = %s OR wm.IdWarehousePlus_id = %s)
-                    AND c.id = %s;
-            '''
+            # Проверка наличия необходимых данных
+            if not selected_component_id or not id_warehouse_plus or not id_warehouse_minus or not date or not comment:
+                messages.error(request, 'Пожалуйста, заполните все обязательные поля действительными значениями.')
+            else:
+                # Получение объекта компонента по его ID
+                selected_component = Components.objects.get(id=selected_component_id)
 
-            with connection.cursor() as cursor:
-                cursor.execute(query, [id_warehouse_minus, id_warehouse_minus, selected_component_id])
-                components_arrival = dictfetchall(cursor)
+                # Вычисление общего количества после добавления нового перемещения
+                total_quantity = calculate_total_quantity(selected_component_id, id_warehouse_minus, id_warehouse_plus)
 
-            total_quantity = calculate_total_quantity(selected_component_id, id_warehouse_minus, selected_warehouse_plus_id)
+                # Если опция 'enable_edit' включена, создаем новое перемещение на склад
+                if request.POST.get('enable_edit') == 'on':
+                    warehouse_movement = WarehouseMovement(
+                        IdComponents=selected_component,
+                        quantity=quantity,
+                        IdWarehousePlus_id=id_warehouse_plus,
+                        IdWarehouseMinus_id=id_warehouse_minus,
+                        date=date,
+                        Comment=comment,
+                    )
 
-            return render(request, 'add_warehouse_movements.html', {'warehouses': Warehouse.objects.all(), 'components_arrival': components_arrival, 'components': Components.objects.all(), 'total_quantity': total_quantity})
+                    warehouse_movement.save()
 
-        elif 'add_movement' in request.POST:
-            try:
-                selected_component_id = request.POST.get('component_name')
-                quantity = int(request.POST.get('quantity'))
-                id_warehouse_plus = request.POST.get('id_warehouse_plus')
-                id_warehouse_minus = request.POST.get('id_warehouse_minus')
-                date = request.POST.get('date')
-                comment = request.POST.get('comment')
+        except (Components.DoesNotExist, ValueError):
+            messages.error(request, 'Недопустимый ввод. Пожалуйста, проверьте ваши данные.')
 
-                if not selected_component_id or not id_warehouse_plus or not id_warehouse_minus or not date or not comment:
-                    messages.error(request, 'Пожалуйста, заполните все обязательные поля действительными значениями.')
-                else:
-                    selected_component = Components.objects.get(id=selected_component_id)
-                    total_quantity = calculate_total_quantity(selected_component_id, id_warehouse_minus, id_warehouse_plus)
+    # Отображение шаблона с результатами
+    return render(request, 'add_warehouse_movements.html', {'warehouses': Warehouse.objects.all(), 'components': Components.objects.all(), 'total_quantity': total_quantity})
 
-                    if request.POST.get('enable_edit') == 'on':
-                        warehouse_movement = WarehouseMovement(
-                            IdComponents=selected_component,
-                            quantity=quantity,
-                            IdWarehousePlus_id=id_warehouse_plus,
-                            IdWarehouseMinus_id=id_warehouse_minus,
-                            date=date,
-                            Comment=comment,
-                        )
-
-                        warehouse_movement.save()
-
-            except (Components.DoesNotExist, ValueError):
-                messages.error(request, 'Недопустимый ввод. Пожалуйста, проверьте ваши данные.')
-
-    warehouses = Warehouse.objects.all()
-    return render(request, 'add_warehouse_movements.html', {'warehouses': warehouses, 'components': Components.objects.all(), 'total_quantity': total_quantity})
-
+# Функция для преобразования результата запроса курсора в список словарей
 def dictfetchall(cursor):
     columns = [col[0] for col in cursor.description]
     return [dict(zip(columns, row)) for row in cursor.fetchall()]
 
+def get_total_quantity(request):
+    # Получите значения component_id и warehouse_minus_id из GET-параметров
+    component_id = request.GET.get('component_id')
+    warehouse_minus_id = request.GET.get('warehouse_minus_id')
 
+    # Вычислите total_quantity используя вашу функцию calculate_total_quantity
+    total_quantity = calculate_total_quantity(component_id, warehouse_minus_id, None)
+
+    # Отправьте JSON-ответ с total_quantity
+    return JsonResponse({'total_quantity': total_quantity})
     
 #-------------------------------------------------------------------------------------
 

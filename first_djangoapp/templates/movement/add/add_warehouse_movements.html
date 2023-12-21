@@ -6,30 +6,36 @@
 </head>
 
 <body>
+  <!-- Заголовок страницы -->
   <h1>Add Warehouse Movement</h1>
-  <form method="post" action="{% url 'add_warehouse_movement' %}">
-    {% csrf_token %}
 
+  <!-- Форма для добавления перемещения на складе -->
+  <form method="post" action="{% url 'add_warehouse_movement' %}">
+    {% csrf_token %} <!-- CSRF-токен для безопасности формы -->
+
+    <!-- Выбор склада для уменьшения количества товара -->
     <label for="id_warehouse_minus">Warehouse Minus:</label>
-    <select name="id_warehouse_minus">
+    <select name="id_warehouse_minus" id="id_warehouse_minus">
       {% for warehouse in warehouses %}
       <option value="{{ warehouse.id }}">{{ warehouse.address }}</option>
       {% endfor %}
     </select>
-    <button type="submit" name="show_items">Show Warehouse Items</button><br><br>
 
+    <!-- Выбор компонента и обновление Quantity через JavaScript -->
     <label for="component_name">Component Name:</label>
-    <select name="component_name" id="component_name" onchange="updateQuantity()">
+    <select name="component_name" id="component_name">
       {% for component in components %}
       <option value="{{ component.id }}" data-quantity="{{ component.quantity }}">{{ component.name }}</option>
       {% endfor %}
     </select><br><br>
 
-    <label for="quantity">Quantity:</label>
+    <!-- Поле для ввода количества товара и опция редактирования -->
+    <label for="quantity">Quantity</label>
     <input type="number" name="quantity" id="quantity" value="{{ total_quantity }}" disabled>
     <input type="checkbox" name="enable_edit" id="enable_edit" onchange="toggleEdit()">
     <label for="enable_edit">Enable Edit</label><br><br>
 
+    <!-- Выбор склада для увеличения количества товара -->
     <label for="id_warehouse_plus">Warehouse Plus:</label>
     <select name="id_warehouse_plus">
       {% for warehouse in warehouses %}
@@ -37,54 +43,67 @@
       {% endfor %}
     </select><br><br>
 
+    <!-- Поле для ввода даты перемещения -->
     <label for="date">Date:</label>
     <input type="datetime-local" name="date" id="id_date" required><br><br>
 
+    <!-- Поле для ввода комментария -->
     <label for="comment">Comment:</label>
     <input type="text" name="comment"><br><br>
 
+    <!-- Кнопка для отправки формы и ссылка на домашнюю страницу -->
     <button type="submit" name="add_movement">Add Movement</button>
     <a href="{% url 'warehouse_movements' %}"><button type="button">Go to home</button></a>
+    <div id="total_quantity_output">Quantity: 0</div>
   </form>
 
-  <!-- Display Warehouse Items 
-{% if components_arrival %}
-<h2>Warehouse Movements</h2>
-<ul>
-  {% for movement in components_arrival %}
-    <li>
-      Movement ID: {{ movement.movement_id }}<br>
-      From Warehouse: {{ movement.from_warehouse_address }}<br>
-      To Warehouse: {{ movement.to_warehouse_address }}<br>
-      Component Name: {{ movement.component_name }}<br>
-      Quantity: {{ movement.movement_quantity }}<br>
-      Date: {{ movement.movement_date }}<br>
-    </li>
-  {% endfor %}
-</ul>
-{% endif %}-->
-
-
+  <!-- Вывод сообщений (ошибок, уведомлений) -->
   {% if messages %}
   <ul class="messages">
     {% for message in messages %}
     <li{% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</li>
-    {% endfor %}
+      {% endfor %}
   </ul>
   {% endif %}
 
+  <!-- Скрипты JavaScript -->
   <script>
-    // Set the current date and time
-    document.getElementById('id_date').value = new Date().toISOString().slice(0, 16);
+    document.addEventListener('DOMContentLoaded', function () {
+      // При изменении Warehouse Minus и Component Name вызывается updateQuantity
+      document.getElementById('id_warehouse_minus').addEventListener('change', updateQuantity);
+      document.getElementById('component_name').addEventListener('change', updateQuantity);
 
+      // Установка текущей даты и времени
+      document.getElementById('id_date').value = new Date().toISOString().slice(0, 16);
+    });
+
+    // Функция для обновления значения Quantity при выборе компонента и склада минус
     function updateQuantity() {
       var componentSelect = document.getElementById('component_name');
+      var warehouseMinusSelect = document.getElementById('id_warehouse_minus');
       var quantityInput = document.getElementById('quantity');
-      var selectedOption = componentSelect.options[componentSelect.selectedIndex];
-      var quantity = selectedOption.getAttribute('data-quantity');
-      quantityInput.value = quantity;
+
+      var selectedComponentOption = componentSelect.options[componentSelect.selectedIndex];
+      var selectedWarehouseMinusOption = warehouseMinusSelect.options[warehouseMinusSelect.selectedIndex];
+
+      var selectedComponentId = selectedComponentOption.value;
+      var selectedWarehouseMinusId = selectedWarehouseMinusOption.value;
+
+      // Проверка, что оба поля выбраны
+      if (selectedComponentId && selectedWarehouseMinusId) {
+        // Отправляем запрос на сервер для получения total_quantity
+        fetch(`/get_total_quantity/?component_id=${selectedComponentId}&warehouse_minus_id=${selectedWarehouseMinusId}`)
+          .then(response => response.json())
+          .then(data => {
+            quantityInput.value = data.total_quantity;
+          })
+          .catch(error => {
+            console.error('Error:', error);
+          });
+      }
     }
 
+    // Функция для включения/выключения редактирования количества
     function toggleEdit() {
       var quantityInput = document.getElementById('quantity');
       var enableEditCheckbox = document.getElementById('enable_edit');
