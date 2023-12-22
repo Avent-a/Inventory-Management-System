@@ -146,8 +146,6 @@ def calculate_total_quantity(selected_component_id, selected_warehouse_minus_id,
 
     return total_quantity
 
-
-
 # Функция обработки запроса на добавление перемещения на склад
 def add_warehouse_movement(request):
     # Инициализация переменной для хранения общего количества
