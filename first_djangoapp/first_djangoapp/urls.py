@@ -24,6 +24,7 @@ urlpatterns = [
     path('', views.index, name='index'),  # Empty path for the index page
     path('warehouse/', views.warehouse, name='warehouse'),
     path('warehouse/add/', views.add_warehouse, name='add_warehouse'),
+        path('get_warehouses_with_component/', views.get_warehouses_with_component, name='get_warehouses_with_component'),
      path('get_total_quantity/', views.get_total_quantity, name='get_total_quantity'),
     path('warehouse/<int:warehouse_id>/delete/', views.delete_warehouse, name='delete_warehouse'),
     path('products/', views.product, name='products'),
