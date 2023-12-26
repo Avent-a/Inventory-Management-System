@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html>
 
@@ -14,15 +15,19 @@
     {% csrf_token %} <!-- CSRF-токен для безопасности формы -->
 
     <!-- Выбор склада для уменьшения количества товара -->
-    <label for="warehouse_minus_text">Warehouse Minus:</label>
-    <input type="text" name="warehouse_minus_text" id="warehouse_minus_text" value="" readonly><br><br>
+    <label for="warehouse_minus">Warehouse Minus:</label>
+    <select name="warehouse_minus" id="warehouse_minus">
+      {% for warehouse in warehouses %}
+      <option value="{{ warehouse.id }}" data-quantity="{{ warehouse.total_quantity }}">{{ warehouse.address }}</option>
+      {% endfor %}
+    </select><br><br>
 
     <!-- Скрытое поле для отправки данных id_warehouse_minus -->
     <input type="hidden" name="id_warehouse_minus" id="id_warehouse_minus">
 
     <!-- Выбор компонента и обновление Quantity через JavaScript -->
     <label for="component_name">Component Name:</label>
-    <select name="component_name" id="component_name" onchange="updateWarehouseDetails();">
+    <select name="component_name" id="component_name">
       {% for component in components %}
       <option value="{{ component.id }}" data-quantity="{{ component.total_quantity }}">{{ component.name }}</option>
       {% endfor %}
@@ -30,8 +35,7 @@
 
     <!-- Поле для ввода количества товара -->
     <label for="quantity">Quantity:</label>
-    <input type="number" name="quantity" id="quantity" value="0">
-    <span id="quantityError" style="color: red;"></span><br><br>
+    <input type="text" name="quantity" id="quantity"><br><br>
 
     <!-- Выбор склада для увеличения количества товара -->
     <label for="id_warehouse_plus">Warehouse Plus:</label>
@@ -43,229 +47,19 @@
 
     <!-- Поле для ввода даты перемещения (автоматическая установка) -->
     <label for="date">Date:</label>
-    <input type="datetime-local" name="date" id="id_date" required value="" readonly><br><br>
+    <input type="datetime-local" name="date" id="id_date" required readonly><br><br>
 
     <!-- Поле для ввода комментария -->
     <label for="comment">Comment:</label>
-    <input type="text" name="comment"><br><br>
+    <input type="text" name="comment" required><br><br>
 
-    <button type="button" onclick="showItems()">Show Items</button>
-    <button type="submit" onclick="validateForm()">Add Movement</button>
+    <button type="submit">Add Movement</button>
 
     <a href="{% url 'warehouse_movements' %}"><button type="button">Go to home</button></a>
-
-    <footer id="item_table" style="display: none;">
-      <table border="1" id="warehouse_table">
-        <tr>
-          <th>Id</th>
-          <th>Warehouse</th>
-          <th>Total Quantity</th>
-        </tr>
-      </table>
-    </footer>
-
-    <!-- Скрипты JavaScript -->
-    <script>
-      window.onload = function () {
-        // Установите начальное значение, если необходимо
-        document.getElementById('quantity').value = "{{ total_quantity }}";
-      };
-
-      var selectedComponentId;
-
-      function updateWarehouseTable(data) {
-        try {
-          var warehouseTable = document.getElementById('warehouse_table');
-          warehouseTable.innerHTML = ''; // Очищаем существующие строки
-
-          // Удостоверяемся, что data - это массив
-          if (!Array.isArray(data)) {
-            throw new Error('Data is not an array.');
-          }
-
-          var headerRow = warehouseTable.insertRow(0);
-          var headerCell1 = headerRow.insertCell(0);
-          var headerCell2 = headerRow.insertCell(1);
-          var headerCell3 = headerRow.insertCell(2);
-          headerCell1.innerHTML = '<b>Id</b>';
-          headerCell2.innerHTML = '<b>Warehouse</b>';
-          headerCell3.innerHTML = '<b>Total Quantity</b>';
-
-          data.forEach(function (warehouse) {
-            var row = warehouseTable.insertRow(-1);
-            var cell1 = row.insertCell(0);
-            var cell2 = row.insertCell(1);
-            var cell3 = row.insertCell(2);
-            cell1.innerHTML = warehouse.id;
-            cell2.innerHTML = warehouse.address;
-
-            // Добавляем ссылку, чтобы пользователь мог выбрать склад
-            cell3.innerHTML = `<a href="#" onclick="selectWarehouse('${warehouse.id}', '${warehouse.address}', ${warehouse.total_quantity}); return false;">${warehouse.total_quantity}</a>`;
-          });
-
-          // Показываем таблицу
-          document.getElementById('item_table').style.display = 'block';
-        } catch (error) {
-          console.error('Error in updateWarehouseTable:', error);
-        }
-      }
-
-      function updateWarehouseDetails() {
-        var componentSelect = document.getElementById('component_name');
-        var selectedComponentOption = componentSelect.options[componentSelect.selectedIndex];
-
-        if (selectedComponentOption) {
-          var warehouseTotalQuantityStr = selectedComponentOption.getAttribute('data-quantity');
-          updateWarehouseTotalQuantity(warehouseTotalQuantityStr);
-          updateQuantity();
-        }
-      }
-
-      function updateWarehouseTotalQuantity(warehouseTotalQuantityStr) {
-        var warehouseTotalQuantity = parseFloat(warehouseTotalQuantityStr);
-        document.getElementById('id_warehouse_minus').value = warehouseTotalQuantityStr;
-        console.log('Warehouse Total Quantity:', warehouseTotalQuantity);
-      }
-
-      function selectWarehouse(warehouseId, warehouseAddress, totalQuantity) {
-        console.log('selectWarehouse called with:', warehouseId, warehouseAddress, totalQuantity);
-
-        // Находим текстовое поле Warehouse Minus
-        var warehouseMinusText = document.getElementById('warehouse_minus_text');
-
-        // Находим скрытое поле для отправки данных id_warehouse_minus
-        var idWarehouseMinusInput = document.getElementById('id_warehouse_minus');
-
-        // Устанавливаем значение в текстовом поле Warehouse Minus
-        warehouseMinusText.value = warehouseAddress;
-
-        // Устанавливаем значение в скрытом поле id_warehouse_minus
-        idWarehouseMinusInput.value = warehouseId;
-
-        // Выводим значение в консоль для проверки
-        console.log('Warehouse Minus ID:', idWarehouseMinusInput.value);
-
-        // Обновляем значение в поле "Quantity" в соответствии с totalQuantity
-        document.getElementById('quantity').value = totalQuantity;
-
-        // Автоматически устанавливаем текущую дату и время
-        var currentDate = new Date();
-        var dateInput = document.getElementById('id_date');
-
-        // Форматируем дату в формат, который поддерживается input type="datetime-local"
-        var formattedDate = currentDate.toISOString().slice(0, 16);
-
-        // Устанавливаем значение в поле "Date"
-        dateInput.value = formattedDate;
-
-        // Внесем изменения в updateWarehouseTable для обновления данных после выбора склада
-        fetch(`/get_warehouses_with_component/?component_id=${selectedComponentId}`)
-          .then(response => {
-            if (!response.ok) {
-              throw new Error(`HTTP error! Status: ${response.status}`);
-            }
-            return response.json();
-          })
-          .then(data => {
-            currentTotalQuantity = data[0].total_quantity;
-            updateWarehouseTable(data);
-            updateQuantity();
-          })
-          .catch(error => {
-            console.error('Error in selectWarehouse:', error);
-          });
-      }
-
-      function validateForm() {
-        // Получаем значение id из поля "Warehouse Minus"
-        var idWarehouseMinusInput = document.getElementById('id_warehouse_minus');
-        var idWarehouseMinus = idWarehouseMinusInput.value;
-
-        console.log('Warehouse Minus ID:', idWarehouseMinus);
-
-        // Вызываем функцию проверки перед отправкой формы
-        updateQuantity();
-
-        // Проверяем, есть ли текст ошибки
-        var errorText = document.getElementById('quantityError').textContent;
-        if (errorText) {
-          return false; // Отменяем отправку формы в случае ошибки
-        }
-
-        // Вызываем функцию перенаправления
-        redirectToWarehouseMovements();
-
-        return true; // Продолжаем отправку формы в случае успешной проверки
-      }
-
-      function redirectToWarehouseMovements() {
-        window.location.href = "{% url 'warehouse_movements' %}";
-      }
-
-      function showItems() {
-        try {
-          var componentSelect = document.getElementById('component_name');
-          var selectedComponentOption = componentSelect.options[componentSelect.selectedIndex];
-
-          // Проверяем, выбран ли компонент
-          if (!selectedComponentOption) {
-            console.error('No component selected.');
-            return;
-          }
-
-          selectedComponentId = selectedComponentOption.value;
-
-          // Fetch информации о складе
-          fetch(`/get_warehouses_with_component/?component_id=${selectedComponentId}`)
-            .then(response => {
-              if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
-              }
-              return response.json();
-            })
-            .then(data => {
-              currentTotalQuantity = data[0].total_quantity;
-              updateWarehouseTable(data);
-              selectWarehouse(selectedComponentId, data[0].address, data[0].total_quantity.toString());
-              updateQuantity();
-            })
-            .catch(error => {
-              console.error('Error in showItems:', error);
-            });
-        } catch (error) {
-          console.error('Error in showItems:', error);
-        }
-      }
-
-      function updateQuantity() {
-        // Проверка на допустимое значение Quantity
-        var quantityInput = document.getElementById('quantity');
-        var quantityError = document.getElementById('quantityError');
-        var warehouseTotalQuantityStr = document.getElementById('id_warehouse_minus').value;
-
-        console.log('Warehouse Total Quantity Str:', warehouseTotalQuantityStr);
-
-        if (!warehouseTotalQuantityStr) {
-          quantityError.textContent = 'Ошибка получения общего количества на складе.';
-          return;
-        }
-
-        var warehouseTotalQuantity = parseFloat(warehouseTotalQuantityStr);
-        var enteredQuantity = parseInt(quantityInput.value, 10);
-
-        console.log('Warehouse Total Quantity:', warehouseTotalQuantity);
-        console.log('Entered Quantity:', enteredQuantity);
-
-        if (isNaN(warehouseTotalQuantity) || enteredQuantity <= 0) {
-          quantityError.textContent = 'Введите число больше 0.';
-        } else if (isNaN(enteredQuantity) || enteredQuantity > warehouseTotalQuantity) {
-          quantityError.textContent = 'Введенное количество больше доступного на складе.';
-        } else {
-          quantityError.textContent = '';
-        }
-      }
-    </script>
   </form>
+  <div id="error-message" style="color: red;"></div>
+  <!-- Подключение внешнего файла со скриптом -->
+  <script src="{% static 'add_warehouse_movements.js' %}"></script>
 </body>
 
 </html>

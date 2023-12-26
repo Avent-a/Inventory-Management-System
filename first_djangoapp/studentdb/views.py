@@ -1,14 +1,16 @@
-from datetime import datetime, timezone
 import traceback
-from django.shortcuts import render, redirect
+from unittest import result
+from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse
 from .models import *
 from django.db import connection
 from django.contrib import messages
-from django.db.models import Sum, F, Value
+from django.db.models import Sum, Value
 from django.db.models.functions import Coalesce
 import logging
 from django.http import HttpResponse, JsonResponse
+from django.utils import timezone
+
 
 def index(request):
     warehouses = Warehouse.objects.all()
@@ -107,68 +109,61 @@ def warehouse_movements(request):
         'warehouse_movements': warehouse_movements
     })
 
-logger = logging.getLogger(__name__)
+def calculate_total_quantity(request):
+    try:
+        selected_component_id = request.GET.get('component_id')
+        selected_warehouse_minus_id = request.GET.get('warehouse_minus_id')
 
-def calculate_total_quantity(selected_component_id, selected_warehouse_minus_id, selected_warehouse_plus_id):
-    warehouse_movement_quantity_minus = WarehouseMovement.objects.filter(
-        IdComponents_id=selected_component_id,
-        IdWarehouseMinus_id=selected_warehouse_minus_id
-    ).aggregate(
-        warehouse_movement_quantity_minus=Sum('quantity')
-    )['warehouse_movement_quantity_minus'] or 0
+        if not selected_component_id or not selected_warehouse_minus_id:
+            return JsonResponse({'error': 'Invalid input. Please provide both component_id and warehouse_minus_id.'}, status=400)
 
-    warehouse_movement_quantity_plus = WarehouseMovement.objects.filter(
-        IdComponents_id=selected_component_id,
-        IdWarehousePlus_id=selected_warehouse_plus_id
-    ).aggregate(
-        warehouse_movement_quantity_plus=Sum('quantity')
-    )['warehouse_movement_quantity_plus'] or 0
+        warehouse_movement_quantity_minus = WarehouseMovement.objects.filter(
+            IdComponents_id=selected_component_id,
+            IdWarehouseMinus_id=selected_warehouse_minus_id
+        ).aggregate(
+            warehouse_movement_quantity_minus=Sum('quantity')
+        )['warehouse_movement_quantity_minus'] or 0
 
-    products_movement_quantity = ProductsMovement.objects.filter(
-        IdComponents_id=selected_component_id,
-        IdWarehouse__id=selected_warehouse_minus_id,
-        status='updated'
-    ).aggregate(
-        products_movement_quantity=Sum('quantity')
-    )['products_movement_quantity'] or 0
+        warehouse_movement_quantity_plus = WarehouseMovement.objects.filter(
+            IdComponents_id=selected_component_id,
+            IdWarehousePlus_id=selected_warehouse_minus_id
+        ).aggregate(
+            warehouse_movement_quantity_plus=Sum('quantity')
+        )['warehouse_movement_quantity_plus'] or 0
 
-    substitution_quantity = ProductsMovement.objects.filter(
-        IdComponents_id=selected_component_id,
-        IdWarehouse__id=selected_warehouse_minus_id,
-        status='substitution'
-    ).aggregate(
-        substitution_quantity=Sum('quantity')
-    )['substitution_quantity'] or 0
+        products_movement_quantity = ProductsMovement.objects.filter(
+            IdComponents_id=selected_component_id,
+            IdWarehouse__id=selected_warehouse_minus_id,
+            status='updated'
+        ).aggregate(
+            products_movement_quantity=Sum('quantity')
+        )['products_movement_quantity'] or 0
 
-    total_quantity = warehouse_movement_quantity_plus + products_movement_quantity - warehouse_movement_quantity_minus - substitution_quantity
+        substitution_quantity = ProductsMovement.objects.filter(
+            IdComponents_id=selected_component_id,
+            IdWarehouse__id=selected_warehouse_minus_id,
+            status='substitution'
+        ).aggregate(
+            substitution_quantity=Sum('quantity')
+        )['substitution_quantity'] or 0
 
-    warehouses_with_component = Warehouse.objects.filter(
+        total_quantity = warehouse_movement_quantity_plus + products_movement_quantity - warehouse_movement_quantity_minus - substitution_quantity
+
+        warehouses_with_component = Warehouse.objects.filter(
             warehouse_plus__IdComponents_id=selected_component_id
         ).annotate(
             total_quantity=Coalesce(Sum('warehouse_plus__quantity'), Value(0)) - Coalesce(Sum('warehouse_minus__quantity'), Value(0))
         )
 
-    return {'total_quantity': total_quantity, 'warehouses_with_component': warehouses_with_component}
+        # Преобразование QuerySet в список словарей
+        warehouses_with_component_list = list(warehouses_with_component.values())
 
-
-def get_warehouses_with_component(request):
-    component_id = request.GET.get('component_id')
-    try:
-        result = calculate_total_quantity(component_id, None, None)
-        warehouses_with_component = result['warehouses_with_component']
-
-        # Создаем список с данными по складам и количеству
-        data = [
-            {'id': warehouse.id, 'address': warehouse.address, 'total_quantity': warehouse.total_quantity}
-            for warehouse in warehouses_with_component
-        ]
-
-        return JsonResponse(data, safe=False)
+        return JsonResponse({'total_quantity': total_quantity or 0, 'warehouses_with_component': warehouses_with_component_list})
     except Exception as e:
-        logger.error(f"An error occurred: {e}")
+        traceback.print_exc()
         return JsonResponse({'error': str(e)}, status=500)
 
-
+    
 def add_warehouse_movement(request):
     total_quantity = 0
     warehouses_with_component = []
@@ -177,7 +172,7 @@ def add_warehouse_movement(request):
         try:
             selected_component_id = request.POST.get('component_name')
             quantity_raw = request.POST.get('quantity')
-            quantity = int(quantity_raw) if quantity_raw is not None else 0
+            quantity = int(quantity_raw) if quantity_raw.strip() else 0
             id_warehouse_plus = request.POST.get('id_warehouse_plus')
             id_warehouse_minus = request.POST.get('id_warehouse_minus')
             date_str = request.POST.get('date')
@@ -186,21 +181,24 @@ def add_warehouse_movement(request):
             if not selected_component_id or not id_warehouse_plus or not id_warehouse_minus or not date_str or not comment:
                 return HttpResponse('Пожалуйста, заполните все обязательные поля действительными значениями.')
 
-            selected_component = Components.objects.get(id=selected_component_id)
-
-            # Проверка на допустимость значения quantity
-            result = calculate_total_quantity(selected_component_id, id_warehouse_minus, id_warehouse_plus)
-            total_quantity = result['total_quantity']
-            warehouses_with_component = result['warehouses_with_component']
+            selected_component = get_object_or_404(Components, id=selected_component_id)
             
+            # Исправлено: конвертация строки даты в объект timezone-aware
+            current_timezone = timezone.get_current_timezone()
+            date = current_timezone.localize(timezone.datetime.strptime(date_str, '%Y-%m-%dT%H:%M'))
 
-            # Проверка на дату
-            current_datetime = datetime.now()
-            date = datetime.strptime(date_str, "%Y-%m-%dT%H:%M")
-            if date > current_datetime:
-                return HttpResponse('Дата перемещения не может быть в будущем.')
+            # Проверяем наличие IdWarehouseMinus_id перед сохранением
+            if id_warehouse_minus is None:
+                return HttpResponse('IdWarehouseMinus_id не может быть пустым.')
 
-            # Вместо проверки enable_edit, просто всегда добавляем новое перемещение
+            # Добавим вывод значения id_warehouse_minus в консоль для отладки
+            print('IdWarehouseMinus_id:', id_warehouse_minus)
+
+            # Проверяем наличие IdWarehouseMinus_id перед сохранением (дополнительная проверка)
+            if not id_warehouse_minus:
+                return HttpResponse('IdWarehouseMinus_id не может быть пустым.')
+
+            # Создаем и сохраняем объект перемещения на складе
             warehouse_movement = WarehouseMovement(
                 IdComponents=selected_component,
                 quantity=quantity,
@@ -211,16 +209,24 @@ def add_warehouse_movement(request):
             )
             warehouse_movement.save()
 
+            # После сохранения перемещения на складе вызываем функцию для расчета total_quantity
+            #calculation_result = calculate_total_quantity(request)
+            #total_quantity = calculation_result['total_quantity']
+            #warehouses_with_component = calculation_result['warehouses_with_component']
+
         except (Components.DoesNotExist, ValueError) as e:
-            return HttpResponse(f'Недопустимый ввод. Пожалуйста, проверьте ваши данные. Ошибка: {e}')
+            # Исправлено: возвращаем более информативное сообщение об ошибке
+            return HttpResponse(f'Ошибка ввода. Пожалуйста, проверьте ваши данные. Ошибка: {e}')
 
-    return render(request, 'add_warehouse_movements.html', {'warehouses': Warehouse.objects.all(), 'components': Components.objects.all(), 'total_quantity': total_quantity, 'warehouses_with_component': warehouses_with_component, 'warehouse_movements': WarehouseMovement.objects.all()})
+    context = {
+        'warehouses': Warehouse.objects.all(),
+        'components': Components.objects.all(),
+        'total_quantity': total_quantity,
+        'warehouses_with_component': warehouses_with_component,
+        'warehouse_movements': WarehouseMovement.objects.all(),
+    }
 
-def get_total_quantity(request):
-    component_id = request.GET.get('component_id')
-    warehouse_minus_id = request.GET.get('warehouse_minus_id')
-    result = calculate_total_quantity(component_id, warehouse_minus_id, None)
-    return JsonResponse(result)
+    return render(request, 'add_warehouse_movements.html', context)
     
 #-------------------------------------------------------------------------------------
 
