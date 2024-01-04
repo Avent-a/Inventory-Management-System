@@ -4,61 +4,106 @@
 
 <head>
   <title>Add Warehouse Movement</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 0;
+    }
+
+    h1 {
+      color: #333;
+      text-align: center;
+    }
+
+    form {
+      max-width: 500px;
+      margin: 20px auto;
+      padding: 20px;
+      background-color: #fff;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    select,
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      box-sizing: border-box;
+    }
+
+    button {
+      background-color: #3498db;
+      color: #fff;
+      border: none;
+      padding: 10px 15px;
+      font-size: 16px;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+
+    button[type="button"] {
+      background-color: #95a5a6;
+      margin-left: 10px;
+    }
+
+    #error-message {
+      color: red;
+      margin-top: 15px;
+    }
+  </style>
 </head>
 
 <body>
-  <!-- Заголовок страницы -->
   <h1>Add Warehouse Movement</h1>
 
-  <!-- Форма для добавления перемещения на складе -->
   <form method="post" action="{% url 'add_warehouse_movement' %}" onsubmit="return validateForm()">
-    {% csrf_token %} <!-- CSRF-токен для безопасности формы -->
+    {% csrf_token %}
 
-    <!-- Выбор склада для уменьшения количества товара -->
     <label for="warehouse_minus">Warehouse Minus:</label>
     <select name="warehouse_minus" id="warehouse_minus">
       {% for warehouse in warehouses %}
       <option value="{{ warehouse.id }}" data-quantity="{{ warehouse.total_quantity }}">{{ warehouse.address }}</option>
       {% endfor %}
-    </select><br><br>
+    </select>
 
-    <!-- Скрытое поле для отправки данных id_warehouse_minus -->
     <input type="hidden" name="id_warehouse_minus" id="id_warehouse_minus">
 
-    <!-- Выбор компонента и обновление Quantity через JavaScript -->
     <label for="component_name">Component Name:</label>
     <select name="component_name" id="component_name">
       {% for component in components %}
       <option value="{{ component.id }}" data-quantity="{{ component.total_quantity }}">{{ component.name }}</option>
       {% endfor %}
-    </select><br><br>
+    </select>
 
-    <!-- Поле для ввода количества товара -->
     <label for="quantity">Quantity:</label>
-    <input type="text" name="quantity" id="quantity"><br><br>
+    <input type="text" name="quantity" id="quantity">
 
-    <!-- Выбор склада для увеличения количества товара -->
-    <label for="id_warehouse_plus">Warehouse Plus:</label>
-    <select name="id_warehouse_plus">
+    <label for="warehouse_plus">Warehouse Plus:</label>
+    <select name="id_warehouse_plus" id="warehouse_plus">
       {% for warehouse in warehouses %}
       <option value="{{ warehouse.id }}">{{ warehouse.address }}</option>
       {% endfor %}
-    </select><br><br>
+    </select>
 
-    <!-- Поле для ввода даты перемещения (автоматическая установка) -->
-    <label for="date">Date:</label>
-    <input type="datetime-local" name="date" id="id_date" required readonly><br><br>
+    <label for="id_date">Date:</label>
+    <input type="datetime-local" name="date" id="id_date" required readonly>
 
-    <!-- Поле для ввода комментария -->
     <label for="comment">Comment:</label>
-    <input type="text" name="comment" required><br><br>
+    <input type="text" name="comment" required>
 
     <button type="submit">Add Movement</button>
-
     <a href="{% url 'warehouse_movements' %}"><button type="button">Go to home</button></a>
   </form>
-  <div id="error-message" style="color: red;"></div>
-  <!-- Подключение внешнего файла со скриптом -->
+  <div id="error-message"></div>
   <script src="{% static 'add_warehouse_movements.js' %}"></script>
 </body>
 

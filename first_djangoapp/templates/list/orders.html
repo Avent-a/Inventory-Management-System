@@ -70,6 +70,15 @@
             border-radius: 4px;
             cursor: pointer;
         }
+
+        .go-button {
+            background-color: #21d410;
+            color: white;
+            padding: 10px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
     </style>
 </head>
 
@@ -81,30 +90,35 @@
         <table>
             <thead>
                 <tr>
+                    <th>Select</th>
                     <th>ID</th>
                     <th>Date</th>
                     <th>Status</th>
                     <th>Employee</th>
                     <th>Product</th>
-                    <th>Quantity</th>
+                    <th>Comment</th>
+                    <th>Office</th>
                 </tr>
             </thead>
             <tbody>
                 {% for order in orders %}
                 <tr>
+                    <td><input type="checkbox" name="selected_orders[]" value="{{ order.id }}"></td>
                     <td>{{ order.id }}</td>
                     <td>{{ order.date }}</td>
                     <td>{{ order.status }}</td>
                     <td>{{ order.employee }}</td>
                     <td>{{ order.product }}</td>
-                    <td>{{ order.quantity }}</td>
+                    <td>{{ order.comment }}</td>
+                    <td>{{ order.IdOffice }}</td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
 
-        <button type="button" class="add-button">Добавить</button>
+        <a href="{% url 'add_orders' %}"><button type="button" class="add-button">Добавить</button></a>
         <button type="button" class="remove-button">Удалить</button>
+        <a href="{% url 'index' %}"><button type="button" class="go-button">Go to home</button></a>
     </form>
     {% endblock %}
 </body>

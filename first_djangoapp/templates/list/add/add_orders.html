@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Order</title>
+
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            color: #333;
+            margin-top: 20px;
+        }
+
+        form {
+            max-width: 600px;
+            margin: 20px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        label {
+            display: block;
+            margin: 10px 0 5px;
+            font-weight: bold;
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        select {
+            height: 35px;
+        }
+
+        button,
+        .button-go-home {
+            display: inline-block;
+            padding: 10px 15px;
+            font-size: 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        button {
+            background-color: #3498db;
+            color: #fff;
+        }
+
+        .button-go-home {
+            background-color: #888;
+            color: #fff;
+        }
+
+        .button-go-home:hover {
+            background-color: #666;
+            text-decoration: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>Add Order</h1>
+
+    <form method="post" action="{% url 'add_orders' %}">
+        {% csrf_token %}
+
+        <label for="date">Date:</label>
+        <!-- Добавляем атрибут id для легкого доступа из JavaScript -->
+        <input type="date" id="date" name="date" required>
+
+        <label for="status">Status:</label>
+        <select name="status" required>
+            <option value="PENDING">В ожидании</option>
+            <option value="PROCESSING">В обработке</option>
+            <option value="COMPLETED">Завершен</option>
+            <option value="CANCELLED">Отменен</option>
+        </select>
+
+        <label for="employee">Employee:</label>
+        <select name="employee" required>
+            {% for employee in employees %}
+            <option value="{{ employee.id }}">{{ employee.name }} {{ employee.lastName }}</option>
+            {% endfor %}
+        </select>
+
+        <label for="product">Product:</label>
+        <select name="product" required>
+            {% for product in products %}
+            <option value="{{ product.id }}">{{ product.name }}</option>
+            {% endfor %}
+        </select>
+
+        <label for="office">Office:</label>
+        <select name="office" required>
+            {% for office in offices %}
+            <option value="{{ office.id }}">{{ office.address }}</option>
+            {% endfor %}
+        </select>
+
+        <label for="comment">Comment:</label>
+        <textarea name="comment" rows="4" cols="50" required></textarea>
+
+        <button type="submit">Add Order</button>
+        <a href="{% url 'orders' %}" class="button-go-home">Go to Home</a>
+    </form>
+
+    <script>
+        function setInitialDate() {
+            // Получаем текущую дату
+            var currentDate = new Date().toISOString().split('T')[0];
+
+            // Устанавливаем значение текущей даты в поле с id "date"
+            document.getElementById('date').value = currentDate;
+        }
+
+        // Вызываем функцию setInitialDate при загрузке страницы
+        window.onload = setInitialDate;
+    </script>
+
+</body>
+
+</html>

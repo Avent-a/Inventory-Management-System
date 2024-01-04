@@ -7,25 +7,50 @@
   <title>Inventory Management System</title>
 
   <style>
-    /* Стили для шапки */
+    /* General styles */
+    body {
+      font-family: 'Arial', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f5f5f5;
+    }
+
+    /* Header styles */
     header {
       background-color: #333;
       color: #fff;
       padding: 20px;
+      text-align: center;
     }
 
     header h1 {
       margin: 0;
     }
 
-    /* Стили для секций */
+    /* Main container styles */
+    main {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      max-width: 800px;
+      margin: 20px auto;
+      padding: 20px;
+      background-color: #fff;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Section styles */
     section {
+      flex-basis: 48%;
       margin-bottom: 20px;
+      padding: 20px;
+      background-color: #f9f9f9;
+      border-radius: 8px;
     }
 
     section h2 {
-      font-size: 20px;
-      margin: 0;
+      font-size: 24px;
+      margin: 0 0 15px;
     }
 
     section ul {
@@ -37,21 +62,14 @@
       margin-bottom: 10px;
     }
 
-    /* Стили для ссылок */
+    /* Link styles */
     a {
-      color: #333;
+      color: #3498db;
       text-decoration: none;
     }
 
     a:hover {
       text-decoration: underline;
-    }
-
-    /* Стили для основного контейнера */
-    main {
-      max-width: 800px;
-      margin: 0 auto;
-      padding: 20px;
     }
   </style>
 
@@ -66,37 +84,36 @@
   <main>
 
     <section class="warehouses">
-      <h2><a href="{% url 'warehouse' %}">Warehouses</a></h2>
+      <h2><span class="emoji">🏬</span><a href="{% url 'warehouse' %}">Warehouses</a></h2>
     </section>
 
     <section class="offices">
-      <h2><a href="{% url 'offices' %}">Offices</a></h2>
+      <h2><span class="emoji">🏢</span><a href="{% url 'offices' %}">Offices</a></h2>
     </section>
 
     <section class="employees">
-      <h2><a href="{% url 'employees' %}">Employees</a></h2>
+      <h2><span class="emoji">👥</span><a href="{% url 'employees' %}">Employees</a></h2>
     </section>
 
     <section class="products">
-      <h2><a href="{% url 'products' %}">Products</a></h2>
+      <h2><span class="emoji">📦</span><a href="{% url 'products' %}">Products</a></h2>
     </section>
 
     <section class="orders">
-      <h2><a href="{% url 'orders' %}">Orders</a></h2>
+      <h2><span class="emoji">📑</span><a href="{% url 'orders' %}">Orders</a></h2>
     </section>
 
     <section class="components">
-      <h2><a href="{% url 'components' %}">Components</a></h2>
+      <h2><span class="emoji">⚙️</span><a href="{% url 'components' %}">Components</a></h2>
     </section>
 
     <section class="warehouse-movements">
-      <h2><a href="{% url 'warehouse_movements' %}">Warehouse Movements</a></h2>
+      <h2><span class="emoji">🚚</span><a href="{% url 'warehouse_movements' %}">Warehouse Movements</a></h2>
     </section>
 
     <section class="complimentarys">
-      <h2><a href="{% url 'products_movements' %}">products_movements</a></h2>
+      <h2><span class="emoji">🔄</span><a href="{% url 'products_movements' %}">Products Movements</a></h2>
     </section>
-
 
   </main>
 

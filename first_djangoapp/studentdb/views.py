@@ -94,6 +94,38 @@ def orders(request):
     return render(request, 'orders.html', {
         'orders': orders
     })
+
+def add_orders(request):
+    employees = Employee.objects.all()
+    offices = Office.objects.all()
+    products = Product.objects.all()
+
+    if request.method == 'POST':
+        date = request.POST.get('date')
+        status = request.POST.get('status')
+        employee_id = request.POST.get('employee')
+        product_id = request.POST.get('product')
+        comment = request.POST.get('comment')
+        office_id = request.POST.get('office')
+
+        employee = Employee.objects.get(pk=employee_id)
+        product = Product.objects.get(pk=product_id)
+        office = Office.objects.get(pk=office_id)
+
+        order = Order(
+            date=date,
+            status=status,
+            employee=employee,
+            product=product,
+            comment=comment,
+            IdOffice=office,
+        )
+
+        order.save()
+
+        return redirect('orders')
+
+    return render(request, 'add_orders.html', {'employees': employees, 'offices': offices, 'products': products})
 #-------------------------------------------------------------------------------------
 
 def components(request):
@@ -179,26 +211,37 @@ def add_warehouse_movement(request):
             comment = request.POST.get('comment')
 
             if not selected_component_id or not id_warehouse_plus or not id_warehouse_minus or not date_str or not comment:
-                return HttpResponse('Пожалуйста, заполните все обязательные поля действительными значениями.')
+                return HttpResponse('Please fill in all required fields with valid values.')
 
             selected_component = get_object_or_404(Components, id=selected_component_id)
-            
-            # Исправлено: конвертация строки даты в объект timezone-aware
+
+            # Check if warehouse_plus_id is the same as warehouse_minus_id
+            if id_warehouse_plus == id_warehouse_minus:
+                return HttpResponse('Warehouse plus and minus cannot be the same.')
+
+            # Convert the date string to a timezone-aware object
             current_timezone = timezone.get_current_timezone()
             date = current_timezone.localize(timezone.datetime.strptime(date_str, '%Y-%m-%dT%H:%M'))
 
-            # Проверяем наличие IdWarehouseMinus_id перед сохранением
+            # Check if IdWarehouseMinus_id is present before saving
             if id_warehouse_minus is None:
-                return HttpResponse('IdWarehouseMinus_id не может быть пустым.')
+                return HttpResponse('IdWarehouseMinus_id cannot be empty.')
 
-            # Добавим вывод значения id_warehouse_minus в консоль для отладки
+            # Add print statement for debugging purposes
             print('IdWarehouseMinus_id:', id_warehouse_minus)
 
-            # Проверяем наличие IdWarehouseMinus_id перед сохранением (дополнительная проверка)
+            # Check if IdWarehouseMinus_id is present before saving (additional check)
             if not id_warehouse_minus:
-                return HttpResponse('IdWarehouseMinus_id не может быть пустым.')
+                return HttpResponse('IdWarehouseMinus_id cannot be empty.')
 
-            # Создаем и сохраняем объект перемещения на складе
+            # Check if the quantity is non-negative and less than or equal to available quantity
+            if quantity <= 0:
+                return HttpResponse('Quantity must be a non-negative value.')
+            if quantity >= quantity:
+                return HttpResponse('Quantity must be.')
+
+
+            # Create and save the warehouse movement object
             warehouse_movement = WarehouseMovement(
                 IdComponents=selected_component,
                 quantity=quantity,
@@ -209,14 +252,9 @@ def add_warehouse_movement(request):
             )
             warehouse_movement.save()
 
-            # После сохранения перемещения на складе вызываем функцию для расчета total_quantity
-            #calculation_result = calculate_total_quantity(request)
-            #total_quantity = calculation_result['total_quantity']
-            #warehouses_with_component = calculation_result['warehouses_with_component']
-
         except (Components.DoesNotExist, ValueError) as e:
-            # Исправлено: возвращаем более информативное сообщение об ошибке
-            return HttpResponse(f'Ошибка ввода. Пожалуйста, проверьте ваши данные. Ошибка: {e}')
+            # Return a more informative error message
+            return HttpResponse(f'Input error. Please check your data. Error: {e}')
 
     context = {
         'warehouses': Warehouse.objects.all(),

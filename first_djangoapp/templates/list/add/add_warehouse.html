@@ -1,20 +1,75 @@
-
-
 {% block content %}
 
-    <h2>Add Warehouse</h2>
+    <div class="form-container">
+        <h2>Add Warehouse</h2>
 
-    <form method="post">
-        {% csrf_token %}
+        <form method="post">
+            {% csrf_token %}
 
-        <label for="address">Address:</label>
-        <input type="text" id="address" name="address" required>
+            <div class="form-group">
+                <label for="address">Address:</label>
+                <input type="text" id="address" name="address" required>
+            </div>
 
-        <label for="phone">Phone:</label>
-        <input type="text" id="phone" name="phone" required>
+            <div class="form-group">
+                <label for="phone">Phone:</label>
+                <input type="text" id="phone" name="phone" required>
+            </div>
 
-        <button type="submit" class="btn btn-primary">Add</button>
-        <a href="{% url 'index' %}"><button type="button">Go to home</button></a>
-    </form>
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary">Add</button>
+                <a href="{% url 'warehouse' %}" class="btn btn-secondary">Go to home</a>
+            </div>
+        </form>
+    </div>
+
+    <style>
+        .form-container {
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #fff;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button, a.btn {
+            display: inline-block;
+            padding: 10px 15px;
+            font-size: 16px;
+            text-align: center;
+            text-decoration: none;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background-color: #3498db;
+            color: #fff;
+        }
+
+        .btn-secondary {
+            background-color: #95a5a6;
+            color: #fff;
+        }
+    </style>
 
 {% endblock %}

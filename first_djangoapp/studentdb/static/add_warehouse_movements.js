@@ -1,47 +1,62 @@
 document.addEventListener('DOMContentLoaded', function () {
   var warehouseMinusSelect = document.getElementById('warehouse_minus');
+  var warehousePlusSelect = document.getElementById('warehouse_plus');
   var componentSelect = document.getElementById('component_name');
   var quantityInput = document.getElementById('quantity');
   var idWarehouseMinusInput = document.getElementById('id_warehouse_minus');
   var errorMessageDiv = document.getElementById('error-message');
 
   function updateWarehouseDetails() {
-  var selectedWarehouseMinusOption = warehouseMinusSelect.options[warehouseMinusSelect.selectedIndex];
-  var selectedComponentOption = componentSelect.options[componentSelect.selectedIndex];
+    var selectedWarehouseMinusOption = warehouseMinusSelect.options[warehouseMinusSelect.selectedIndex];
+    var selectedWarehousePlusOption = warehousePlusSelect.options[warehousePlusSelect.selectedIndex];
+    var selectedComponentOption = componentSelect.options[componentSelect.selectedIndex];
 
-  if (selectedWarehouseMinusOption && selectedComponentOption) {
-    var warehouseMinusId = selectedWarehouseMinusOption.value;
-    var componentId = selectedComponentOption.value;
+    if (selectedWarehouseMinusOption && selectedComponentOption && selectedWarehousePlusOption) {
+      var warehouseMinusId = selectedWarehouseMinusOption.value;
+      var warehousePlusId = selectedWarehousePlusOption.value;
+      var componentId = selectedComponentOption.value;
 
-    console.log('Warehouse Minus ID:', warehouseMinusId);
-    console.log('Component ID:', componentId);
+      console.log('Warehouse Minus ID:', warehouseMinusId);
+      console.log('Warehouse Plus ID:', warehousePlusId);
+      console.log('Component ID:', componentId);
 
-    // Use fetch to make a request to the Django view
-    fetch(`/calculate-total-quantity/?component_id=${componentId}&warehouse_minus_id=${warehouseMinusId}`)
-      .then(response => {
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        return response.json();
-      })
-      .then(data => {
-        // Update the interface with the received total_quantity value
-        updateWarehouseDetailsUI(data.total_quantity, warehouseMinusId);
-      })
-      .catch(error => {
-        console.error('Error fetching total quantity:', error);
-      });
+      // Check if warehouse_minus_id is the same as warehouse_plus_id
+      if (warehouseMinusId === warehousePlusId) {
+        showError("Warehouse plus and minus cannot be the same.");
+        return;
+      }
+
+      // Use fetch to make a request to the Django view
+      fetch(`/calculate-total-quantity/?component_id=${componentId}&warehouse_minus_id=${warehouseMinusId}&warehouse_plus_id=${warehousePlusId}`)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.json();
+        })
+        .then(data => {
+          // Update the interface with the received total_quantity value
+          updateWarehouseDetailsUI(data.total_quantity, warehouseMinusId);
+        })
+        .catch(error => {
+          console.error('Error fetching total quantity:', error);
+        });
+    }
   }
-}
 
-function updateWarehouseDetailsUI(componentTotalQuantity, warehouseMinusId) {
-  if (quantityInput) {
-    quantityInput.value = componentTotalQuantity;
-    idWarehouseMinusInput.value = warehouseMinusId;  // Устанавливаем IdWarehouseMinus_id в поле формы
-  } else {
-    console.error('Element Quantity not found.');
+  // Add event listener for changes in the warehouse_plus select element
+  if (warehousePlusSelect) {
+    warehousePlusSelect.addEventListener('change', updateWarehouseDetails);
   }
-}
+
+  function updateWarehouseDetailsUI(componentTotalQuantity, warehouseMinusId) {
+    if (quantityInput) {
+      quantityInput.value = componentTotalQuantity;
+      idWarehouseMinusInput.value = warehouseMinusId;
+    } else {
+      console.error('Element Quantity not found.');
+    }
+  }
 
   function showError(message) {
     if (errorMessageDiv) {
@@ -74,9 +89,13 @@ function validateForm() {
   var quantityInput = document.getElementById('quantity');
   var selectedWarehouseMinusSelect = document.getElementById('warehouse_minus');
   var selectedWarehouseMinusOption = selectedWarehouseMinusSelect.options[selectedWarehouseMinusSelect.selectedIndex];
+  var selectedWarehousePlusSelect = document.getElementById('warehouse_plus');
+  var selectedWarehousePlusOption = selectedWarehousePlusSelect.options[selectedWarehousePlusSelect.selectedIndex];
   var selectedComponentSelect = document.getElementById('component_name');
-  var selectedComponentOption = componentSelect.options[selectedComponentSelect.selectedIndex];
+  var selectedComponentOption = selectedComponentSelect.options[selectedComponentSelect.selectedIndex];
 
+  console.log('Selected Warehouse Minus ID:', selectedWarehouseMinusOption ? selectedWarehouseMinusOption.value : 'N/A');
+  console.log('Selected Warehouse Plus ID:', selectedWarehousePlusOption ? selectedWarehousePlusOption.value : 'N/A');
   console.log('Selected Warehouse Quantity:', selectedWarehouseMinusOption ? selectedWarehouseMinusOption.getAttribute('data-quantity') || selectedWarehouseMinusOption.innerHTML : 'N/A');
   console.log('Selected Component Quantity:', selectedComponentOption ? selectedComponentOption.getAttribute('data-quantity') || selectedComponentOption.innerHTML : 'N/A');
 
@@ -85,18 +104,16 @@ function validateForm() {
     return false;
   }
 
-  if (selectedWarehouseMinusOption && selectedWarehouseMinusOption.getAttribute('data-quantity') < quantityInput.value) {
-    showError("Not enough quantity in the selected warehouse to move.");
-    return false;
-  }
-
-  if (quantityInput.value < 0) {
-    showError("Quantity must be a non-negative value.");
-    return false;
-  }
 
   if (!selectedComponentOption) {
     showError("Please select a component.");
+    return false;
+  }
+
+  // Use strict equality for comparison
+  if (selectedWarehouseMinusOption && selectedWarehousePlusOption &&
+    selectedWarehouseMinusOption.value === selectedWarehousePlusOption.value) {
+    showError("Warehouse plus and minus cannot be the same.");
     return false;
   }
 

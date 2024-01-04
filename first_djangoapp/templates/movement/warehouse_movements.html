@@ -69,6 +69,14 @@
       border-radius: 4px;
       cursor: pointer;
     }
+    .go-button{
+      background-color: #21d410;
+      color: white;
+      padding: 10px 16px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
@@ -102,9 +110,9 @@
           </tbody>
         </table>
   
-        <button type="button" class="add-button"><a href="{% url 'add_warehouse_movement' %}">Добавить</button>
+        <a href="{% url 'add_warehouse_movement' %}"><button type="button" class="add-button">Добавить</button></a>
         <button type="button" class="remove-button">Удалить</button>
-        <a href="{% url 'index' %}"><button type="button">Go to home</button></a>
+        <a href="{% url 'index' %}"><button type="button" class="go-button">Go to home</button></a>
       </form>
     {% endblock %}
   </body>

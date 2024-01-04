@@ -17,6 +17,8 @@ class Office(models.Model):
     address = models.CharField(max_length=255)  # адрес офиса
     area = models.IntegerField()  # площадь офиса в квадратных метрах
     phone = models.CharField(max_length=20, null=True)  # телефонный номер офиса
+    def __str__(self):
+        return '{0}'.format(self.address)
 
 # Модель Сотрудник
 class Employee(models.Model):
@@ -56,7 +58,8 @@ class Order(models.Model):
     status = models.CharField(max_length=10, choices=ORDER_STATUS_CHOICES)  # статус заказа
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE)  # связь с таблицей Сотрудник
     product = models.ForeignKey(Product, on_delete=models.CASCADE)  # связь с таблицей Продукт
-    quantity = models.IntegerField()  # количество заказанных продуктов
+    comment = models.CharField(max_length=1000)  # количество заказанных продуктов
+    IdOffice = models.ForeignKey(Office, on_delete=models.CASCADE)
 
 
 # Модель Комплектующие

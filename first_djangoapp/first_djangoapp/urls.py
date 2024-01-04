@@ -31,6 +31,7 @@ urlpatterns = [
     path('add_offices/', views.add_offices, name='add_offices'),
     path('employees/', views.employees, name='employees'),
     path('orders/', views.orders, name='orders'),
+    path('add_orders/', views.add_orders, name='add_orders'),
     path('components/', views.components, name='components'),
     path('warehouse_movements/', views.warehouse_movements, name='warehouse_movements'),
     path('warehouse_movements/add', views.add_warehouse_movement, name='add_warehouse_movement'),
