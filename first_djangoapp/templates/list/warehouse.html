@@ -1,5 +1,8 @@
+{% extends 'index.html' %}
 <!DOCTYPE html>
 <html lang="en">
+
+{% block content %}
 
 <head>
   <meta charset="UTF-8">
@@ -62,7 +65,8 @@
       cursor: pointer;
     }
 
-    .remove-button {
+    .Hidden-button,
+    .Show-hidden-button {
       background-color: #d95b43;
       color: white;
       padding: 10px 16px;
@@ -70,47 +74,114 @@
       border-radius: 4px;
       cursor: pointer;
     }
-    .go-button{
-      background-color: #21d410;
-      color: white;
-      padding: 10px 16px;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
+
+    .hidden-row {
+      display: none;
     }
   </style>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      var hiddenButton = document.querySelector('.Hidden-button');
+      var showHiddenButton = document.querySelector('.Show-hidden-button');
+  
+      // Check if there is a 'hiddenRows' item in localStorage
+      var hiddenRows = localStorage.getItem('hiddenRows');
+      if (hiddenRows) {
+        // Parse the stored hidden rows and apply the 'hidden-row' class
+        var hiddenRowsArray = JSON.parse(hiddenRows);
+        hiddenRowsArray.forEach(function (rowId) {
+          var row = document.querySelector('[data-id="' + rowId + '"]');
+          if (row) {
+            row.classList.add('hidden-row');
+          }
+        });
+      }
+  
+      // Check if there is a 'checkedCheckboxes' item in localStorage
+      var checkedCheckboxes = localStorage.getItem('checkedCheckboxes');
+      if (checkedCheckboxes) {
+        // Parse the stored checked checkboxes and set the checked state
+        var checkedCheckboxesArray = JSON.parse(checkedCheckboxes);
+        checkedCheckboxesArray.forEach(function (checkboxId) {
+          var checkbox = document.querySelector('[value="' + checkboxId + '"]');
+          if (checkbox) {
+            checkbox.checked = true;
+          }
+        });
+      }
+  
+      hiddenButton.addEventListener('click', function () {
+        toggleHiddenRows(true);
+      });
+  
+      showHiddenButton.addEventListener('click', function () {
+        toggleHiddenRows(false);
+      });
+  
+      function toggleHiddenRows(hide) {
+        var deleteCheckboxes = document.querySelectorAll('[name="deleteCheckbox"]');
+        var hiddenRowsArray = [];
+        var checkedCheckboxesArray = [];
+  
+        deleteCheckboxes.forEach(function (checkbox) {
+          var row = checkbox.closest('tr');
+          if (hide && checkbox.checked && !row.classList.contains('hidden-row')) {
+            row.classList.add('hidden-row');
+            hiddenRowsArray.push(row.dataset.id);
+          } else if (!hide && row.classList.contains('hidden-row')) {
+            row.classList.remove('hidden-row');
+          }
+  
+          // Save the checked state of each checkbox
+          if (checkbox.checked) {
+            checkedCheckboxesArray.push(checkbox.value);
+          }
+        });
+  
+        // Store the updated hidden rows and checked checkboxes in localStorage
+        localStorage.setItem('hiddenRows', JSON.stringify(hiddenRowsArray));
+        localStorage.setItem('checkedCheckboxes', JSON.stringify(checkedCheckboxesArray));
+      }
+    });
+  </script>
+  
 </head>
 
 <body>
-  {% block content %}
+
 
   <h2>Warehouse</h2>
 
-  <form>
+  <form id="warehouseForm" method="post">
+    {% csrf_token %}
     <table>
       <thead>
         <tr>
           <th>Id</th>
           <th>Address</th>
           <th>Phone</th>
+          <th>Delete</th>
         </tr>
       </thead>
       <tbody>
         {% for warehouse in warehouses %}
-        <tr>
+        <tr data-id="{{ warehouse.id }}">
           <td>{{ warehouse.id }}</td>
           <td>{{ warehouse.address }}</td>
           <td>{{ warehouse.phone }}</td>
+          <td><input type="checkbox" name="deleteCheckbox" value="{{ warehouse.id }}"></td>
         </tr>
         {% endfor %}
       </tbody>
     </table>
-    
-    <a href="{% url 'add_warehouse' %}"><button type="button" class="add-button">Добавить</button></a>  
-    <button type="button" class="remove-button">Удалить</button>
-    <a href="{% url 'index' %}"><button type="button" class="go-button">Go to home</button></a>
+
+    <a href="{% url 'add_warehouse' %}"><button type="button" class="add-button">Добавить</button></a>
+    <button type="button" class="Hidden-button">Скрыть</button>
+    <button type="button" class="Show-hidden-button">Показать скрытые</button>
   </form>
-  {% endblock %}
+
+
 </body>
+{% endblock %}
 
 </html>

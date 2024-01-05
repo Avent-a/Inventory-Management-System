@@ -22,9 +22,10 @@ app_name = 'studentdb'
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.index, name='index'),  # Empty path for the index page
+    
     path('warehouse/', views.warehouse, name='warehouse'),
     path('warehouse/add/', views.add_warehouse, name='add_warehouse'),
-    path('warehouse/<int:warehouse_id>/delete/', views.delete_warehouse, name='delete_warehouse'),
+
     path('calculate-total-quantity/', views.calculate_total_quantity, name='calculate_total_quantity'),
     path('products/', views.product, name='products'),
     path('offices/', views.offices, name='offices'),

@@ -1,6 +1,8 @@
+{% extends 'index.html' %}
 <!DOCTYPE html>
 <html lang="en">
 
+{% block content %}
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -83,7 +85,6 @@
 </head>
 
 <body>
-    {% block content %}
 
     <h2>Orders</h2>
     <form>
@@ -118,7 +119,6 @@
 
         <a href="{% url 'add_orders' %}"><button type="button" class="add-button">Добавить</button></a>
         <button type="button" class="remove-button">Удалить</button>
-        <a href="{% url 'index' %}"><button type="button" class="go-button">Go to home</button></a>
     </form>
     {% endblock %}
 </body>

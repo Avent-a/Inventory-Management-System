@@ -40,7 +40,7 @@ def warehouse(request):
     return render(request, 'warehouse.html', {
         'warehouses': warehouses
     })
-#-------------------------------------------------------------------------------------
+
 def add_warehouse(request):
     if request.method == 'POST':
         address = request.POST['address']
@@ -50,11 +50,6 @@ def add_warehouse(request):
         new_warehouse.save()
         return redirect('warehouse')
     return render(request, 'add_warehouse.html')
-
-def delete_warehouse(request, warehouse_id):
-    warehouse = Warehouse.objects.get(id=warehouse_id)
-    warehouse.delete()
-    return redirect('warehouse')
 #-------------------------------------------------------------------------------------
 
 def product(request):
@@ -140,6 +135,8 @@ def warehouse_movements(request):
     return render(request, 'warehouse_movements.html', {
         'warehouse_movements': warehouse_movements
     })
+
+logger = logging.getLogger(__name__)
 
 def calculate_total_quantity(request):
     try:
