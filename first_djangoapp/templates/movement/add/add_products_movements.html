@@ -1,0 +1,115 @@
+{% extends 'index.html' %}
+{% block content %}
+    <div class="form-container" role="form">
+        <h2>Add Products Movement</h2>
+
+        <form method="post" action="{% url 'add_products_movements' %}" autocomplete="off" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label for="IdWarehouse">Warehouse ID:</label>
+                <select id="IdWarehouse" name="IdWarehouse" required>
+                    {% for warehouse in warehouses %}
+                        <option value="{{ warehouse.id }}">{{ warehouse.address }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="quantity">Quantity:</label>
+                <input type="number" id="quantity" name="quantity" required placeholder="Enter quantity">
+            </div>
+
+            <div class="form-group">
+                <label for="IdComponents">Components ID:</label>
+                <select id="IdComponents" name="IdComponents" required>
+                    {% for component in components %}
+                        <option value="{{ component.id }}">{{ component.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="IdProduct">Product ID:</label>
+                <select id="IdProduct" name="IdProduct" required>
+                    {% for product in products %}
+                        <option value="{{ product.id }}">{{ product.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="status">Status:</label>
+                <select id="status" name="status" required>
+                    <option value="updated">Updated</option>
+                    <option value="substitution">Substitution</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary">Add</button>
+                <a href="{% url 'products_movements' %}"><button type="button">Go to home</button></a>
+            </div>
+        </form>
+    </div>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+    
+        h1, h2 {
+            color: #333;
+            text-align: center;
+        }
+    
+        form {
+            max-width: 500px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+    
+        label {
+            display: block;
+            margin-bottom: 8px;
+        }
+    
+        select,
+        input,
+        button {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            box-sizing: border-box;
+        }
+    
+        button {
+            background-color: #3498db;
+            color: #fff;
+            border: none;
+            padding: 10px 15px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+    
+        button[type="button"] {
+                background-color: #95a5a6;
+                padding: 10px 15px;
+                font-size: 16px;
+            }
+    
+        #error-message {
+            color: red;
+            margin-top: 15px;
+        }
+    </style>
+
+{% endblock %}

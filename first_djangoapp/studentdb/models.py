@@ -8,6 +8,7 @@ class Warehouse(models.Model):
     id = models.AutoField(primary_key=True)  # уникальный идентификатор склада
     address = models.CharField(max_length=255)  # адрес склада
     phone = models.CharField(max_length=20, null=True)  # телефонный номер склада
+    hidden = models.BooleanField(default=False)
     def __str__(self):
         return '{0}'.format(self.address)
 
@@ -26,7 +27,7 @@ class Employee(models.Model):
     name = models.CharField(max_length=50)  # имя сотрудника
     lastName = models.CharField(max_length=50)  # фамилия сотрудника
     def __str__(self):
-        return '{0}'.format(self.name)
+        return f"{self.name} {self.lastName}"
 
 # Модель Категория
 class Category(models.Model):

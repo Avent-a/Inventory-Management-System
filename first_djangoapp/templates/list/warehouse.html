@@ -1,8 +1,8 @@
 {% extends 'index.html' %}
-<!DOCTYPE html>
-<html lang="en">
 
 {% block content %}
+<!DOCTYPE html>
+<html lang="en">
 
 <head>
   <meta charset="UTF-8">
@@ -78,77 +78,16 @@
     .hidden-row {
       display: none;
     }
+
+    .newly-shown-row {
+      display: table-row;
+    }
   </style>
-  <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      var hiddenButton = document.querySelector('.Hidden-button');
-      var showHiddenButton = document.querySelector('.Show-hidden-button');
-  
-      // Check if there is a 'hiddenRows' item in localStorage
-      var hiddenRows = localStorage.getItem('hiddenRows');
-      if (hiddenRows) {
-        // Parse the stored hidden rows and apply the 'hidden-row' class
-        var hiddenRowsArray = JSON.parse(hiddenRows);
-        hiddenRowsArray.forEach(function (rowId) {
-          var row = document.querySelector('[data-id="' + rowId + '"]');
-          if (row) {
-            row.classList.add('hidden-row');
-          }
-        });
-      }
-  
-      // Check if there is a 'checkedCheckboxes' item in localStorage
-      var checkedCheckboxes = localStorage.getItem('checkedCheckboxes');
-      if (checkedCheckboxes) {
-        // Parse the stored checked checkboxes and set the checked state
-        var checkedCheckboxesArray = JSON.parse(checkedCheckboxes);
-        checkedCheckboxesArray.forEach(function (checkboxId) {
-          var checkbox = document.querySelector('[value="' + checkboxId + '"]');
-          if (checkbox) {
-            checkbox.checked = true;
-          }
-        });
-      }
-  
-      hiddenButton.addEventListener('click', function () {
-        toggleHiddenRows(true);
-      });
-  
-      showHiddenButton.addEventListener('click', function () {
-        toggleHiddenRows(false);
-      });
-  
-      function toggleHiddenRows(hide) {
-        var deleteCheckboxes = document.querySelectorAll('[name="deleteCheckbox"]');
-        var hiddenRowsArray = [];
-        var checkedCheckboxesArray = [];
-  
-        deleteCheckboxes.forEach(function (checkbox) {
-          var row = checkbox.closest('tr');
-          if (hide && checkbox.checked && !row.classList.contains('hidden-row')) {
-            row.classList.add('hidden-row');
-            hiddenRowsArray.push(row.dataset.id);
-          } else if (!hide && row.classList.contains('hidden-row')) {
-            row.classList.remove('hidden-row');
-          }
-  
-          // Save the checked state of each checkbox
-          if (checkbox.checked) {
-            checkedCheckboxesArray.push(checkbox.value);
-          }
-        });
-  
-        // Store the updated hidden rows and checked checkboxes in localStorage
-        localStorage.setItem('hiddenRows', JSON.stringify(hiddenRowsArray));
-        localStorage.setItem('checkedCheckboxes', JSON.stringify(checkedCheckboxesArray));
-      }
-    });
-  </script>
-  
+
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 </head>
 
 <body>
-
 
   <h2>Warehouse</h2>
 
@@ -160,28 +99,122 @@
           <th>Id</th>
           <th>Address</th>
           <th>Phone</th>
-          <th>Delete</th>
+          <th>Hidden</th>
         </tr>
       </thead>
       <tbody>
         {% for warehouse in warehouses %}
-        <tr data-id="{{ warehouse.id }}">
+        <tr data-id="{{ warehouse.id }}" class="{% if warehouse.hidden %}hidden-row{% endif %}"
+          data-hidden-state="{% if warehouse.hidden %}hidden{% else %}visible{% endif %}">
           <td>{{ warehouse.id }}</td>
           <td>{{ warehouse.address }}</td>
           <td>{{ warehouse.phone }}</td>
-          <td><input type="checkbox" name="deleteCheckbox" value="{{ warehouse.id }}"></td>
+          <td>
+            <input type="checkbox" {% if warehouse.hidden %}checked{% endif %} data-warehouse-id="{{ warehouse.id }}"
+              class="hidden-checkbox">
+          </td>
         </tr>
         {% endfor %}
       </tbody>
     </table>
 
     <a href="{% url 'add_warehouse' %}"><button type="button" class="add-button">Добавить</button></a>
-    <button type="button" class="Hidden-button">Скрыть</button>
+    <button type="button" class="Hidden-button">Сохранить изменения</button>
     <button type="button" class="Show-hidden-button">Показать скрытые</button>
   </form>
 
+  <script>
+    $(document).ready(function () {
+      // Получение CSRF-токена из cookie
+      function getCookie(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+          var cookies = document.cookie.split(';');
+          for (var i = 0; i < cookies.length; i++) {
+            var cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+              cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+              break;
+            }
+          }
+        }
+        return cookieValue;
+      }
+
+      // Установка CSRF-токена для AJAX-запросов
+      $.ajaxSetup({
+        beforeSend: function (xhr, settings) {
+          if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
+            xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+          }
+        }
+      });
+
+      // Обработка события изменения чекбокса
+      $('.hidden-checkbox').change(function () {
+        // Запомнить изменение чекбокса, обновление статуса будет после нажатия на кнопку "Скрыть"
+        $(this).data('changed', true);
+      });
+
+      // Функция для рекурсивного обновления страницы
+      function refreshPage() {
+        location.reload();
+      }
+
+      // Обработка события клика по кнопке "Скрыть"
+      $('.Hidden-button').click(function () {
+
+        // Обновление статуса только для измененных чекбоксов
+        $('.hidden-checkbox').each(function () {
+          if ($(this).data('changed')) {
+            var warehouseId = $(this).data('warehouse-id');
+            var isChecked = $(this).prop('checked');
+
+            // AJAX-запрос для обновления поля 'hidden' в базе данных
+            $.ajax({
+              method: 'POST',
+              url: '/update_hidden_status/',  // Замените на реальный URL
+              data: {
+                warehouse_id: warehouseId,
+                is_hidden: isChecked
+              },
+              success: function (data) {
+                console.log('Статус скрытия успешно обновлен.');
+                // После успешного обновления вызываем функцию для рекурсивного обновления страницы
+                refreshPage();
+              },
+              error: function (error) {
+                console.error('Ошибка при обновлении статуса скрытия:', error);
+              }
+            });
+          }
+        });
+      });
+
+      // Обработка события клика по кнопке "Показать скрытые"
+      $('.Show-hidden-button').click(function () {
+        // Показать все строки с классом 'hidden-row'
+        $('.hidden-row').each(function () {
+          var hiddenState = $(this).data('hidden-state');
+          if (hiddenState === 'hidden') {
+            $(this).show();
+          }
+        });
+      });
+    });
+
+    $('.Show-hidden-button').click(function () {
+      // Показать все строки с классом 'hidden-row'
+      $('.hidden-row').each(function () {
+        var hiddenState = $(this).data('hidden-state');
+        if (hiddenState === 'hidden') {
+          $(this).removeClass('hidden-row').addClass('newly-shown-row');
+        }
+      });
+    });
+  </script>
 
 </body>
-{% endblock %}
 
 </html>
+{% endblock %}

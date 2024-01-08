@@ -1,3 +1,5 @@
+{% extends 'index.html' %}
+{% block content %}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -9,72 +11,60 @@
 
     <style>
         body {
-            font-family: 'Arial', sans-serif;
+            font-family: Arial, sans-serif;
             background-color: #f4f4f4;
-            text-align: center;
             margin: 0;
             padding: 0;
         }
-
-        h1 {
+    
+        h1, h2 {
             color: #333;
-            margin-top: 20px;
+            text-align: center;
         }
-
+    
         form {
-            max-width: 600px;
+            max-width: 500px;
             margin: 20px auto;
-            background-color: #fff;
             padding: 20px;
+            background-color: #fff;
+            border: 1px solid #ccc;
             border-radius: 5px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
-
+    
         label {
             display: block;
-            margin: 10px 0 5px;
-            font-weight: bold;
+            margin-bottom: 8px;
         }
-
-        input,
+    
         select,
-        textarea {
+        input,
+        button {
             width: 100%;
-            padding: 8px;
-            box-sizing: border-box;
+            padding: 10px;
             margin-bottom: 15px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
+            box-sizing: border-box;
         }
-
-        select {
-            height: 35px;
-        }
-
-        button,
-        .button-go-home {
-            display: inline-block;
-            padding: 10px 15px;
-            font-size: 16px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            text-decoration: none;
-        }
-
+    
         button {
             background-color: #3498db;
             color: #fff;
+            border: none;
+            padding: 10px 15px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 4px;
         }
-
-        .button-go-home {
-            background-color: #888;
-            color: #fff;
-        }
-
-        .button-go-home:hover {
-            background-color: #666;
-            text-decoration: none;
+    
+        button[type="button"] {
+                background-color: #95a5a6;
+                padding: 10px 15px;
+                font-size: 16px;
+            }
+    
+        #error-message {
+            color: red;
+            margin-top: 15px;
         }
     </style>
 </head>
@@ -123,7 +113,7 @@
         <textarea name="comment" rows="4" cols="50" required></textarea>
 
         <button type="submit">Add Order</button>
-        <a href="{% url 'index' %}" class="button-go-home">Go to Home</a>
+        <a href="{% url 'index' %}"><button type="button">Go to home</button></a>
     </form>
 
     <script>
@@ -140,5 +130,6 @@
     </script>
 
 </body>
+{% endblock %}
 
 </html>

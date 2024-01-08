@@ -2,6 +2,7 @@ import traceback
 from unittest import result
 from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse
+from jsonschema import ValidationError
 from .models import *
 from django.db import connection
 from django.contrib import messages
@@ -10,6 +11,7 @@ from django.db.models.functions import Coalesce
 import logging
 from django.http import HttpResponse, JsonResponse
 from django.utils import timezone
+from django.views.decorators.csrf import csrf_exempt
 
 
 def index(request):
@@ -41,6 +43,29 @@ def warehouse(request):
         'warehouses': warehouses
     })
 
+def update_hidden_status(request):
+    print("update_hidden_status function is called.")
+
+def update_hidden_status(request):
+    if request.method == 'POST':
+        warehouse_id = request.POST.get('warehouse_id')
+        is_hidden_str = request.POST.get('is_hidden')
+
+        # Convert the string "true" to a boolean value
+        is_hidden = is_hidden_str.lower() == 'true'
+
+        try:
+            warehouse = Warehouse.objects.get(pk=warehouse_id)
+            warehouse.hidden = is_hidden
+            warehouse.save()
+            return JsonResponse({'success': True, 'hidden': warehouse.hidden})
+        except Warehouse.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'Warehouse not found'})
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)})
+    
+    return JsonResponse({'success': False, 'error': 'Invalid request method'})
+
 def add_warehouse(request):
     if request.method == 'POST':
         address = request.POST['address']
@@ -57,6 +82,19 @@ def product(request):
     return render(request, 'products.html', {
         'products': products,
     })
+
+def add_products(request):
+    categories = Category.objects.all()  # Fetch all categories
+
+    if request.method == 'POST':
+        name = request.POST['name']
+        category_id = request.POST['category']
+
+        new_product = Product(name=name, category_id=category_id)
+        new_product.save()
+        return redirect('products')
+
+    return render(request, 'add_products.html', {'categories': categories})
 #-------------------------------------------------------------------------------------
 
 def offices(request):
@@ -82,6 +120,16 @@ def employees(request):
     return render(request, 'employees.html', {
         'employees': employees
     })
+
+def add_employees(request):
+    if request.method == 'POST':
+        name = request.POST['name']
+        last_name = request.POST['lastName']
+
+        new_employee = Employee(name=name, lastName=last_name)
+        new_employee.save()
+        return redirect('employees')
+    return render(request, 'add_employees.html')
 #-------------------------------------------------------------------------------------
 
 def orders(request):
@@ -128,6 +176,15 @@ def components(request):
     return render(request, 'components.html', {
         'components': components
     })
+
+def add_components(request):
+    if request.method == 'POST':
+        name = request.POST['name']
+
+        new_component = Components(name=name)
+        new_component.save()
+        return redirect('components')
+    return render(request, 'add_components.html')
 #-------------------------------------------------------------------------------------
 
 def warehouse_movements(request):
@@ -270,4 +327,30 @@ def products_movements(request):
     return render(request, 'products_movements.html', {
         'products_movements': products_movements
     })
+
+def add_products_movements(request):
+    if request.method == 'POST':
+        id_warehouse = request.POST.get('IdWarehouse')
+        quantity = request.POST.get('quantity')
+        id_components = request.POST.get('IdComponents')
+        id_product = request.POST.get('IdProduct')
+        status = request.POST.get('status')
+
+        products_movement = ProductsMovement.objects.create(
+            IdWarehouse=Warehouse.objects.get(id=id_warehouse),
+            quantity=quantity,
+            IdComponents=Components.objects.get(id=id_components),
+            IdProduct=Product.objects.get(id=id_product),
+            status=status
+        )
+
+        return redirect('products_movements')
+
+    warehouses = Warehouse.objects.all()
+    components = Components.objects.all()
+    products = Product.objects.all()
+
+    current_datetime = ProductsMovement._meta.get_field('datetime').default()
+
+    return render(request, 'add_products_movements.html', {'warehouses': warehouses, 'components': components, 'products': products})
 #-------------------------------------------------------------------------------------

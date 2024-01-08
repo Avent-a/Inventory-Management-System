@@ -100,13 +100,13 @@
           <td>{{ product_movement.quantity }}</td>
           <td>{{ product_movement.IdComponents }}</td>
           <td>{{ product_movement.IdProduct }}</td>
-          <td>{{ product_movement.ProductsMovement_STATUS_CHOICES  }}</td>
+          <td>{{ product_movement.status }}</td>
         </tr>
         {% endfor %}
       </tbody>
     </table>
 
-    <button type="button" class="add-button">Добавить</button>
+    <a href="{% url 'add_products_movements' %}"><button type="button" class="add-button">Добавить</button></a>
     <button type="button" class="remove-button">Удалить</button>
   </form>
   {% endblock %}

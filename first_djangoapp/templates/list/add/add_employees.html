@@ -1,29 +1,24 @@
 {% extends 'index.html' %}
 {% block content %}
     <div class="form-container">
-        <h2>Add Office</h2>
+        <h2>Add Employee</h2>
 
-        <form method="post">
+        <form method="post" action="{% url 'add_employees' %}">
             {% csrf_token %}
 
             <div class="form-group">
-                <label for="address">Address:</label>
-                <input type="text" id="address" name="address" required>
+                <label for="name">Name:</label>
+                <input type="text" id="name" name="name" required>
             </div>
 
             <div class="form-group">
-                <label for="area">Area:</label>
-                <input type="text" id="area" name="area" required>
-            </div>
-
-            <div class="form-group">
-                <label for="phone">Phone:</label>
-                <input type="text" id="phone" name="phone" required>
+                <label for="last_name">Last Name:</label>
+                <input type="text" id="last_name" name="lastName" required>
             </div>
 
             <div class="form-group">
                 <button type="submit" class="btn btn-primary">Add</button>
-                <a href="{% url 'index' %}"><button type="button">Go to home</button></a>
+                <a href="{% url 'employees' %}" class="btn btn-secondary"><button type="button">Go to home</button></a>
             </div>
         </form>
     </div>

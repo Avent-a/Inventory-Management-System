@@ -25,16 +25,27 @@ urlpatterns = [
     
     path('warehouse/', views.warehouse, name='warehouse'),
     path('warehouse/add/', views.add_warehouse, name='add_warehouse'),
-
+    path('update_hidden_status/', views.update_hidden_status, name='update_hidden_status'),
     path('calculate-total-quantity/', views.calculate_total_quantity, name='calculate_total_quantity'),
+    
     path('products/', views.product, name='products'),
+     path('products/add/', views.add_products, name='add_products'),
+
     path('offices/', views.offices, name='offices'),
     path('add_offices/', views.add_offices, name='add_offices'),
+    
     path('employees/', views.employees, name='employees'),
+    path('employees/add/', views.add_employees, name='add_employees'),
+    
     path('orders/', views.orders, name='orders'),
-    path('add_orders/', views.add_orders, name='add_orders'),
+    path('add_orders/add', views.add_orders, name='add_orders'),
+    
     path('components/', views.components, name='components'),
+    path('components/add/', views.add_components, name='add_components'),
+    
     path('warehouse_movements/', views.warehouse_movements, name='warehouse_movements'),
     path('warehouse_movements/add', views.add_warehouse_movement, name='add_warehouse_movement'),
-    path('products_movements/', views.products_movements, name='products_movements')
+    
+    path('products_movements/', views.products_movements, name='products_movements'),
+     path('products_movements/add', views.add_products_movements, name='add_products_movements'),
 ]
