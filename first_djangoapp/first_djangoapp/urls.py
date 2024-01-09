@@ -26,13 +26,16 @@ urlpatterns = [
     path('warehouse/', views.warehouse, name='warehouse'),
     path('warehouse/add/', views.add_warehouse, name='add_warehouse'),
     path('update_hidden_status/', views.update_hidden_status, name='update_hidden_status'),
+    path('edit_warehouse/<int:warehouse_id>/', views.edit_warehouse, name='edit_warehouse'),
     path('calculate-total-quantity/', views.calculate_total_quantity, name='calculate_total_quantity'),
     
     path('products/', views.product, name='products'),
-     path('products/add/', views.add_products, name='add_products'),
+    path('products/add/', views.add_products, name='add_products'),
 
     path('offices/', views.offices, name='offices'),
     path('add_offices/', views.add_offices, name='add_offices'),
+    path('edit_office/<int:office_id>/', views.edit_office, name='edit_office'),
+    path('update_hidden_status_offices/', views.update_hidden_status_offices, name='update_hidden_status_offices'),
     
     path('employees/', views.employees, name='employees'),
     path('employees/add/', views.add_employees, name='add_employees'),

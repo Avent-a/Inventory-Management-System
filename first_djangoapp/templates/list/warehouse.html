@@ -8,83 +8,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{% block title %} {% endblock %}</title>
-  <style>
-    body {
-      font-family: sans-serif;
-      background-color: #f2f2f2;
-    }
-
-    h2 {
-      text-align: center;
-      font-weight: bold;
-      margin-bottom: 24px;
-      padding: 16px;
-      border-bottom: 1px solid #ccc;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      border-radius: 4px;
-      margin-bottom: 16px;
-    }
-
-    thead {
-      background-color: #eee;
-      font-weight: bold;
-      text-align: center;
-      color: #444;
-    }
-
-    tr {
-      background-color: #fff;
-    }
-
-    th,
-    td {
-      padding: 12px;
-      text-align: center;
-      font-size: 14px;
-      border: 1px solid #ccc;
-    }
-
-    tbody td {
-      font-weight: 400;
-    }
-
-    form {
-      margin-top: 24px;
-    }
-
-    .add-button {
-      background-color: #007bff;
-      color: white;
-      padding: 10px 16px;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-
-    .Hidden-button,
-    .Show-hidden-button {
-      background-color: #d95b43;
-      color: white;
-      padding: 10px 16px;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-
-    .hidden-row {
-      display: none;
-    }
-
-    .newly-shown-row {
-      display: table-row;
-    }
-  </style>
-
+  
+  {% load static %}
+  <link rel="stylesheet" type="text/css" href="{% static 'warehouse/warehouse.css' %}">
   <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+  <script src="{% static 'warehouse/warehouse.js' %}"></script>
 </head>
 
 <body>
@@ -93,6 +21,7 @@
 
   <form id="warehouseForm" method="post">
     {% csrf_token %}
+    <input type="text" id="searchInput" placeholder="Search...">
     <table>
       <thead>
         <tr>
@@ -100,119 +29,32 @@
           <th>Address</th>
           <th>Phone</th>
           <th>Hidden</th>
+          <th>Actions</th>  <!-- New column for actions -->
         </tr>
       </thead>
       <tbody>
         {% for warehouse in warehouses %}
-        <tr data-id="{{ warehouse.id }}" class="{% if warehouse.hidden %}hidden-row{% endif %}"
+        <tr data-id="{{ warehouse.id }}" class="warehouse-row {% if warehouse.hidden %}hidden-row{% endif %}"
           data-hidden-state="{% if warehouse.hidden %}hidden{% else %}visible{% endif %}">
           <td>{{ warehouse.id }}</td>
-          <td>{{ warehouse.address }}</td>
-          <td>{{ warehouse.phone }}</td>
+          <td class="address">{{ warehouse.address }}</td>
+          <td class="phone">{{ warehouse.phone }}</td>
           <td>
             <input type="checkbox" {% if warehouse.hidden %}checked{% endif %} data-warehouse-id="{{ warehouse.id }}"
               class="hidden-checkbox">
+          </td>
+          <td>
+            <a href="{% url 'edit_warehouse' warehouse.id %}"><button type="button"  class="button-edit">Edit</button></a>
           </td>
         </tr>
         {% endfor %}
       </tbody>
     </table>
 
-    <a href="{% url 'add_warehouse' %}"><button type="button" class="add-button">Добавить</button></a>
-    <button type="button" class="Hidden-button">Сохранить изменения</button>
-    <button type="button" class="Show-hidden-button">Показать скрытые</button>
+    <a href="{% url 'add_warehouse' %}"><button type="button" class="add-button">Add</button></a>
+    <button type="button" class="Hidden-button">Save changes</button>
+    <button type="button" class="Show-hidden-button">Show hidden</button>
   </form>
-
-  <script>
-    $(document).ready(function () {
-      // Получение CSRF-токена из cookie
-      function getCookie(name) {
-        var cookieValue = null;
-        if (document.cookie && document.cookie !== '') {
-          var cookies = document.cookie.split(';');
-          for (var i = 0; i < cookies.length; i++) {
-            var cookie = cookies[i].trim();
-            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-              cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-              break;
-            }
-          }
-        }
-        return cookieValue;
-      }
-
-      // Установка CSRF-токена для AJAX-запросов
-      $.ajaxSetup({
-        beforeSend: function (xhr, settings) {
-          if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
-            xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
-          }
-        }
-      });
-
-      // Обработка события изменения чекбокса
-      $('.hidden-checkbox').change(function () {
-        // Запомнить изменение чекбокса, обновление статуса будет после нажатия на кнопку "Скрыть"
-        $(this).data('changed', true);
-      });
-
-      // Функция для рекурсивного обновления страницы
-      function refreshPage() {
-        location.reload();
-      }
-
-      // Обработка события клика по кнопке "Скрыть"
-      $('.Hidden-button').click(function () {
-
-        // Обновление статуса только для измененных чекбоксов
-        $('.hidden-checkbox').each(function () {
-          if ($(this).data('changed')) {
-            var warehouseId = $(this).data('warehouse-id');
-            var isChecked = $(this).prop('checked');
-
-            // AJAX-запрос для обновления поля 'hidden' в базе данных
-            $.ajax({
-              method: 'POST',
-              url: '/update_hidden_status/',  // Замените на реальный URL
-              data: {
-                warehouse_id: warehouseId,
-                is_hidden: isChecked
-              },
-              success: function (data) {
-                console.log('Статус скрытия успешно обновлен.');
-                // После успешного обновления вызываем функцию для рекурсивного обновления страницы
-                refreshPage();
-              },
-              error: function (error) {
-                console.error('Ошибка при обновлении статуса скрытия:', error);
-              }
-            });
-          }
-        });
-      });
-
-      // Обработка события клика по кнопке "Показать скрытые"
-      $('.Show-hidden-button').click(function () {
-        // Показать все строки с классом 'hidden-row'
-        $('.hidden-row').each(function () {
-          var hiddenState = $(this).data('hidden-state');
-          if (hiddenState === 'hidden') {
-            $(this).show();
-          }
-        });
-      });
-    });
-
-    $('.Show-hidden-button').click(function () {
-      // Показать все строки с классом 'hidden-row'
-      $('.hidden-row').each(function () {
-        var hiddenState = $(this).data('hidden-state');
-        if (hiddenState === 'hidden') {
-          $(this).removeClass('hidden-row').addClass('newly-shown-row');
-        }
-      });
-    });
-  </script>
 
 </body>
 

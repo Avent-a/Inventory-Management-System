@@ -18,6 +18,7 @@ class Office(models.Model):
     address = models.CharField(max_length=255)  # адрес офиса
     area = models.IntegerField()  # площадь офиса в квадратных метрах
     phone = models.CharField(max_length=20, null=True)  # телефонный номер офиса
+    hidden = models.BooleanField(default=False)
     def __str__(self):
         return '{0}'.format(self.address)
 

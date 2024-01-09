@@ -1,92 +1,23 @@
 {% extends 'index.html' %}
+{% block content %}
 <!DOCTYPE html>
 <html lang="en">
-    {% block content %}
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Offices{% endblock %}</title>
-    <style>
-        body {
-            font-family: sans-serif;
-            background-color: #f2f2f2;
-        }
 
-        h2 {
-            text-align: center;
-            font-weight: bold;
-            margin-bottom: 24px;
-            padding: 16px;
-            border-bottom: 1px solid #ccc;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            border-radius: 4px;
-            margin-bottom: 16px;
-        }
-
-        thead {
-            background-color: #eee;
-            font-weight: bold;
-            text-align: center;
-            color: #444;
-        }
-
-        tr {
-            background-color: #fff;
-        }
-
-        th,
-        td {
-            padding: 12px;
-            text-align: center;
-            font-size: 14px;
-            border: 1px solid #ccc;
-        }
-
-        tbody td {
-            font-weight: 400;
-        }
-
-        form {
-            margin-top: 24px;
-        }
-
-        .add-button {
-            background-color: #007bff;
-            color: white;
-            padding: 10px 16px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-
-        .remove-button {
-            background-color: #d95b43;
-            color: white;
-            padding: 10px 16px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        .go-button{
-      background-color: #21d410;
-      color: white;
-      padding: 10px 16px;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-    </style>
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'offices/offices.css' %}">
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="{% static 'offices/offices.js' %}"></script>
 </head>
 
 <body>
 
-
     <h2>Offices</h2>
-
+    <input type="text" id="searchInput" placeholder="Search...">
     <form method="post">
         <table>
             <thead>
@@ -95,24 +26,33 @@
                     <th>Address</th>
                     <th>Area</th>
                     <th>Phone</th>
+                    <th>Hidden</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
                 {% for office in offices %}
-                <tr>
+                <tr data-id="{{ office.id }}" class="office-row {% if office.hidden %}hidden-row{% endif %}" data-hidden-state="{% if office.hidden %}hidden{% else %}visible{% endif %}">
                     <td>{{ office.id }}</td>
                     <td>{{ office.address }}</td>
                     <td>{{ office.area }}</td>
                     <td>{{ office.phone }}</td>
+                    <td>
+                        <input type="checkbox" {% if office.hidden %}checked{% endif %} data-office-id="{{ office.id }}" class="hidden-checkbox">
+                    </td>
+                    <td>
+                        <a href="{% url 'edit_office' office.id %}"><button type="button" class="button-edit">Edit</button></a>
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
-        
-        <a href="{% url 'add_offices' %}"><button type="button" class="add-button">Добавить</button></a>
-        <button type="button" class="remove-button">Удалить</button>
+
+        <a href="{% url 'add_offices' %}"><button type="button" class="add-button">Add</button></a>
+        <button type="button" class="Hidden-button">Save changes</button>
+        <button type="button" class="Show-hidden-button">Show hidden</button>
     </form>
 
 </body>
-{% endblock %}
 </html>
+{% endblock %}

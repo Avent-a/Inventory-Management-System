@@ -9,7 +9,7 @@ from django.contrib import messages
 from django.db.models import Sum, Value
 from django.db.models.functions import Coalesce
 import logging
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, HttpResponseServerError, JsonResponse
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 
@@ -44,9 +44,6 @@ def warehouse(request):
     })
 
 def update_hidden_status(request):
-    print("update_hidden_status function is called.")
-
-def update_hidden_status(request):
     if request.method == 'POST':
         warehouse_id = request.POST.get('warehouse_id')
         is_hidden_str = request.POST.get('is_hidden')
@@ -75,6 +72,26 @@ def add_warehouse(request):
         new_warehouse.save()
         return redirect('warehouse')
     return render(request, 'add_warehouse.html')
+
+def edit_warehouse(request, warehouse_id):
+    try:
+        warehouse = get_object_or_404(Warehouse, pk=warehouse_id)
+
+        if request.method == 'POST':
+            # Обработка отправки формы для обновления деталей склада
+            address = request.POST['address']
+            phone = request.POST['phone']
+
+            warehouse.address = address
+            warehouse.phone = phone
+            warehouse.save()
+
+            return redirect('warehouse')
+
+        return render(request, '/home/student/Documents/first_djangoapp/templates/edit/edit_warehouse.html', {'warehouse': warehouse})
+    except Exception as e:
+        # Отображение информации об ошибке
+        return HttpResponseServerError(f"Internal Server Error: {str(e)}")
 #-------------------------------------------------------------------------------------
 
 def product(request):
@@ -95,6 +112,8 @@ def add_products(request):
         return redirect('products')
 
     return render(request, 'add_products.html', {'categories': categories})
+
+
 #-------------------------------------------------------------------------------------
 
 def offices(request):
@@ -113,6 +132,44 @@ def add_offices(request):
         new_office.save()
         return redirect('offices')
     return render(request, 'add_offices.html')
+
+def edit_office(request, office_id):
+    office = get_object_or_404(Office, pk=office_id)
+
+    if request.method == 'POST':
+        # Обработка отправки формы для обновления деталей офиса
+        address = request.POST['address']
+        area = request.POST['area']
+        phone = request.POST['phone'] 
+
+        office.address = address
+        office.area = area
+        office.phone = phone
+        office.save()
+
+        return redirect('offices')
+
+    return render(request, 'edit/edit_office.html', {'office': office})
+    
+def update_hidden_status_offices(request):
+    if request.method == 'POST':
+        office_id = request.POST.get('office_id')
+        is_hidden_str = request.POST.get('is_hidden')
+
+        # Convert the string "true" to a boolean value
+        is_hidden = is_hidden_str.lower() == 'true'
+
+        try:
+            office = Office.objects.get(pk=office_id)
+            office.hidden = is_hidden
+            office.save()
+            return JsonResponse({'success': True, 'hidden': office.hidden})
+        except Office.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'Office not found'})
+        except ValueError as e:
+            return JsonResponse({'success': False, 'error': str(e)})
+
+    return JsonResponse({'success': False, 'error': 'Invalid request method'})
 #-------------------------------------------------------------------------------------
 
 def employees(request):
