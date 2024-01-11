@@ -27,6 +27,7 @@ class Employee(models.Model):
     id = models.AutoField(primary_key=True)  # уникальный идентификатор сотрудника
     name = models.CharField(max_length=50)  # имя сотрудника
     lastName = models.CharField(max_length=50)  # фамилия сотрудника
+    hidden = models.BooleanField(default=False)
     def __str__(self):
         return f"{self.name} {self.lastName}"
 
@@ -34,6 +35,7 @@ class Employee(models.Model):
 class Category(models.Model):
     id = models.AutoField(primary_key=True)  # уникальный идентификатор категории
     name = models.CharField(max_length=100, default='')  # название категории
+    hidden = models.BooleanField(default=False)
     def __str__(self):
         return '{0}'.format(self.name)
 
@@ -43,6 +45,7 @@ class Product(models.Model):
     id = models.AutoField(primary_key=True)  # уникальный идентификатор продукта
     name = models.CharField(max_length=100)  # название продукта
     category = models.ForeignKey(Category, on_delete=models.CASCADE)  # связь с таблицей Категория
+    hidden = models.BooleanField(default=False)
     def __str__(self):
         return '{0}'.format(self.name)
     
@@ -62,12 +65,13 @@ class Order(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)  # связь с таблицей Продукт
     comment = models.CharField(max_length=1000)  # количество заказанных продуктов
     IdOffice = models.ForeignKey(Office, on_delete=models.CASCADE)
-
+    hidden = models.BooleanField(default=False)
 
 # Модель Комплектующие
 class Components(models.Model):
     id = models.AutoField(primary_key=True)  # уникальный идентификатор комплектующего
     name = models.CharField(max_length=100, default=None)  # название комплектующего
+    hidden = models.BooleanField(default=False)
     def __str__(self):
         return '{0}'.format(self.name)
     
@@ -80,6 +84,7 @@ class WarehouseMovement(models.Model):
     IdComponents = models.ForeignKey(Components, on_delete=models.CASCADE, null=True, default=None)  # связь с таблицей Комплектующие
     date = models.DateTimeField()  # дата
     Comment = models.CharField(max_length=100, default ='', null=True)  # название комплектующего
+    hidden = models.BooleanField(default=False)
     def __str__(self):
         return '{0}'.format(self.id)
 
@@ -97,7 +102,7 @@ class ProductsMovement(models.Model):
     IdProduct = models.ForeignKey(Product, on_delete=models.CASCADE)
     IdWarehouse = models.ForeignKey(Warehouse, on_delete=models.CASCADE)
     status = models.CharField(max_length=100, choices=ProductsMovement_STATUS_CHOICES, default='updated')
-
+    hidden = models.BooleanField(default=False)
     def __str__(self):
         return '{0}'.format(self.id)
 
