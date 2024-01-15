@@ -56,11 +56,11 @@ ROOT_URLCONF = 'first_djangoapp.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [r'/home/student/Documents/first_djangoapp/templates',
-                 r'/home/student/Documents/first_djangoapp/templates/list',
-                 r'/home/student/Documents/first_djangoapp/templates/movement',
-                 r'/home/student/Documents/first_djangoapp/templates/list/add',
-                 r'/home/student/Documents/first_djangoapp/templates/movement/add'
+        'DIRS': [r'/home/user/dj/Inventory-Management-System/first_djangoapp/templates',
+                 r'/home/user/dj/Inventory-Management-System/first_djangoapp/templates/list',
+                 r'/home/user/dj/Inventory-Management-System/first_djangoapp/templates/movement',
+                 r'/home/user/dj/Inventory-Management-System/first_djangoapp/templates/list/add',
+                 r'/home/user/dj/Inventory-Management-System/first_djangoapp/templates/movement/add'
                 ],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -84,9 +84,9 @@ DATABASES = {
       'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'studentdb',
-        'USER': 'student',
-        'PASSWORD': 'acd123',
-        'HOST': '192.168.218.115',
+        'USER': 'admin',
+        'PASSWORD': 'Flo123!@#',
+        'HOST': '127.0.0.1',
         'PORT': '3306',
     } 
 }
