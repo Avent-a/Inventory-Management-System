@@ -1,0 +1,88 @@
+body {
+    font-family: sans-serif;
+    /* Установка шрифта для всего документа */
+    background-color: #f2f2f2;
+    /* Установка цвета фона */
+}
+
+h2 {
+    text-align: center;
+    /* Выравнивание заголовка по центру */
+    font-weight: bold;
+    /* Установка жирного начертания шрифта */
+    margin-bottom: 24px;
+    /* Отступ снизу */
+    padding: 16px;
+    /* Внутренний отступ */
+    border-bottom: 1px solid #ccc;
+    /* Граница снизу */
+}
+
+form {
+    width: 50%;
+    /* Ширина формы */
+    margin: 0 auto;
+    /* Выравнивание формы по центру */
+}
+
+label {
+    display: block;
+    /* Отображение элемента как блока */
+    margin-top: 10px;
+    /* Верхний отступ для разделения меток */
+}
+
+input {
+    width: 100%;
+    /* Занимает всю доступную ширину контейнера */
+    padding: 10px;
+    /* Внутренний отступ вокруг текста в поле ввода */
+    box-sizing: border-box;
+    /* Включение внутреннего и внешнего отступа в общую ширину/высоту элемента */
+    border: 1px solid #ccc;
+    /* Цвет границы поля ввода */
+    border-radius: 4px;
+    /* Закругление углов поля ввода */
+    margin-bottom: 16px;
+    /* Нижний отступ для разделения элементов */
+    font-size: 14px;
+    /* Размер шрифта */
+}
+
+button {
+    background-color: #4CAF50;
+    /* Цвет фона кнопки */
+    color: white;
+    /* Цвет текста кнопки */
+    padding: 10px 16px;
+    /* Внутренний отступ кнопки */
+    border: none;
+    /* Удаление границы кнопки */
+    border-radius: 4px;
+    /* Закругление углов кнопки */
+    cursor: pointer;
+    /* Установка курсора при наведении */
+    font-size: 16px;
+    /* Размер шрифта */
+}
+
+button:hover {
+    background-color: #0056b3;
+    /* Темнокрасный цвет фона кнопки при наведении */
+}
+
+button[type="button"] {
+    background-color: #95a5a6;
+    padding: 10px 15px;
+    font-size: 16px;
+}
+
+form {
+    max-width: 500px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}

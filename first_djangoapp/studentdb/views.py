@@ -133,6 +133,8 @@ def add_offices(request):
         return redirect('offices')
     return render(request, 'add_offices.html')
 
+
+
 def edit_office(request, office_id):
     office = get_object_or_404(Office, pk=office_id)
 
@@ -173,20 +175,59 @@ def update_hidden_status_offices(request):
 #-------------------------------------------------------------------------------------
 
 def employees(request):
-    employees = Employee.objects.all()
+    employees_list = Employee.objects.all()
     return render(request, 'employees.html', {
-        'employees': employees
+        'employees': employees_list
     })
 
 def add_employees(request):
     if request.method == 'POST':
         name = request.POST['name']
-        last_name = request.POST['lastName']
+        last_name = request.POST['last_name']
 
-        new_employee = Employee(name=name, lastName=last_name)
+        new_employee = Employee(name=name, last_name=last_name)
         new_employee.save()
         return redirect('employees')
     return render(request, 'add_employees.html')
+
+def update_hidden_status_employees(request):
+    if request.method == 'POST':
+        employees_id = request.POST.get('employee_id')
+        is_hidden_str = request.POST.get('is_hidden')
+
+        # Convert the string "true" to a boolean value
+        is_hidden = is_hidden_str.lower() == 'true'
+
+        try:
+            employee = Employee.objects.get(pk=employees_id)
+            employee.hidden = is_hidden
+            employee.save()
+            return JsonResponse({'success': True, 'hidden': employee.hidden})
+        except Employee.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'Employee not found'})
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)})
+    
+    return JsonResponse({'success': False, 'error': 'Invalid request method'})
+
+def edit_employees(request, employee_id):
+    try:
+        employee = get_object_or_404(Employee, pk=employee_id)
+
+        if request.method == 'POST':
+            name = request.POST['name']
+            last_name = request.POST['last_name']
+
+            employee.name = name
+            employee.last_name = last_name
+            employee.save()
+
+            return redirect('employees')
+
+        return render(request, 'edit/edit_employees.html', {'employee': employee})
+    except Exception as e:
+        # Отображение информации об ошибке
+        return HttpResponseServerError(f"Internal Server Error: {str(e)}")
 #-------------------------------------------------------------------------------------
 
 def orders(request):
