@@ -88,7 +88,7 @@ def edit_warehouse(request, warehouse_id):
 
             return redirect('warehouse')
 
-        return render(request, '/home/student/Documents/first_djangoapp/templates/edit/edit_warehouse.html', {'warehouse': warehouse})
+        return render(request, 'edit/edit_warehouse.html', {'warehouse': warehouse})
     except Exception as e:
         # Отображение информации об ошибке
         return HttpResponseServerError(f"Internal Server Error: {str(e)}")
@@ -185,9 +185,10 @@ def add_employees(request):
         name = request.POST['name']
         last_name = request.POST['last_name']
 
-        new_employee = Employee(name=name, last_name=last_name)
+        new_employee = Employee(name=name, lastName=last_name)
         new_employee.save()
         return redirect('employees')
+    
     return render(request, 'add_employees.html')
 
 def update_hidden_status_employees(request):
