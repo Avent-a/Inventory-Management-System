@@ -4,15 +4,31 @@
 <html>
 
 {% block content %}
+
 <head>
   <title>Add Warehouse Movement</title>
 
-  <link rel="stylesheet" type="text/css" href="{% static 'add_warehouse_movements/add_warehouse_movements.css' %}">
   <script src="{% static 'add_warehouse_movements/add_warehouse_movements.js' %}"></script>
+  <link rel="stylesheet" type="text/css" href="{% static 'add_warehouse_movements/add_warehouse_movements.css' %}">
 </head>
 
+<style>
+  h2 {
+    text-align: center;
+    /* Выравнивание заголовка по центру */
+    font-weight: bold;
+    /* Установка жирного начертания шрифта */
+    margin-bottom: 24px;
+    /* Отступ снизу */
+    padding: 16px;
+    /* Внутренний отступ */
+    border-bottom: 1px solid #ccc;
+    /* Граница снизу */
+  }
+</style>
+
 <body>
-  <h1>Add Warehouse Movement</h1>
+  <h2>Add Warehouse Movement</h2>
 
   <form method="post" action="{% url 'add_warehouse_movement' %}" onsubmit="return validateForm()">
     {% csrf_token %}
@@ -52,7 +68,7 @@
     <button type="submit">Add Movement</button>
     <a href="{% url 'warehouse_movements' %}"><button type="button">Go to home</button></a>
   </form>
-  
+
 </body>
 {% endblock %}
 

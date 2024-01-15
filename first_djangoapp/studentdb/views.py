@@ -290,7 +290,7 @@ def calculate_total_quantity(request):
             substitution_quantity=Sum('quantity')
         )['substitution_quantity'] or 0
 
-        total_quantity = warehouse_movement_quantity_plus + products_movement_quantity - warehouse_movement_quantity_minus - substitution_quantity
+        total_quantity = warehouse_movement_quantity_plus - products_movement_quantity - warehouse_movement_quantity_minus + substitution_quantity
 
         warehouses_with_component = Warehouse.objects.filter(
             warehouse_plus__IdComponents_id=selected_component_id
@@ -321,8 +321,7 @@ def add_warehouse_movement(request):
             date_str = request.POST.get('date')
             comment = request.POST.get('comment')
 
-            if not selected_component_id or not id_warehouse_plus or not id_warehouse_minus or not date_str or not comment:
-                return HttpResponse('Please fill in all required fields with valid values.')
+
 
             selected_component = get_object_or_404(Components, id=selected_component_id)
 
@@ -348,8 +347,7 @@ def add_warehouse_movement(request):
             # Check if the quantity is non-negative and less than or equal to available quantity
             if quantity <= 0:
                 return HttpResponse('Quantity must be a non-negative value.')
-            if quantity >= quantity:
-                return HttpResponse('Quantity must be.')
+
 
 
             # Create and save the warehouse movement object
