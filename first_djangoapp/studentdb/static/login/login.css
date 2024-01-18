@@ -1,0 +1,52 @@
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    margin: 50px;
+    background-color: #F5F5F5; /* Добавляем светлый фон для контраста */
+}
+
+h2 {
+    color: #333;
+    font-size: 2em; /* Увеличиваем размер шрифта для заголовка */
+    margin-bottom: 20px; /* Добавляем больше пространства под заголовком */
+}
+
+form {
+    max-width: 300px;
+    margin: 0 auto;
+    background-color: #ffffff; /* Добавляем белый фон для формы */
+    padding: 20px; /* Добавляем отступ внутри формы */
+    border-radius: 5px; /* Скругляем углы формы */
+    box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.1); /* Добавляем тень для эффекта "всплывающего" окна */
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold; /* Делаем текст меток жирным */
+    color: #555; /* Делаем цвет меток темнее */
+}
+
+input {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 10px;
+    box-sizing: border-box;
+    border-radius: 5px; /* Скругляем углы текстовых полей */
+    border: 1px solid #cccccc; /* Добавляем границу вокруг текстовых полей */
+}
+
+button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1.1em; /* Увеличиваем размер шрифта кнопки */
+    transition: background-color 0.3s ease; /* Добавляем плавный переход цвета фона */
+}
+
+button:hover {
+    background-color: #45a049;
+}
