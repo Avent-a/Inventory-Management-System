@@ -16,7 +16,7 @@
 <body>
 
 
-  <h2>Components</h2>
+  <h2>Categorys</h2>
 
   <form>
     <table>
@@ -28,9 +28,9 @@
         </tr>
       </thead>
       <tbody>
-        {% for component in components %}
+        {% for categorys in categorys %}
         <tr>
-          <td>{{ component.name }}</td>
+          <td>{{ categorys.name }}</td>
           <td>
             <input type="checkbox" {% if warehouse.hidden %}checked{% endif %} data-warehouse-id="{{ warehouse.id }}"
               class="hidden-checkbox">
