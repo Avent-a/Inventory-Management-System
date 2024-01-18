@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inventory Management System</title>
-    
+
     {% load static %}
     <link rel="stylesheet" type="text/css" href="{% static 'index/index.css' %}">
 </head>
@@ -19,8 +19,13 @@
 
     <main>
         <aside class="sidebar">
+            <section class="warehouse"></section>
             <h2><span class="emoji">🏬</span> <a href="{% url 'warehouse' %}">Warehouses</a></h2>
+            </section>
 
+
+            {% if request.session.is_admin %}
+            <!-- Показывать раздел "Employees" только для администратора -->
             <section class="offices">
                 <h2><span class="emoji">🏢</span> <a href="{% url 'offices' %}">Offices</a></h2>
             </section>
@@ -41,13 +46,16 @@
                 <h2><span class="emoji">⚙️</span> <a href="{% url 'components' %}">Components</a></h2>
             </section>
 
+            <section class="complimentarys">
+                <h2><span class="emoji">🔄</span> <a href="{% url 'products_movements' %}">Products Movements</a></h2>
+            </section>
+
+        {% endif %}
+
             <section class="warehouse-movements">
                 <h2><span class="emoji">🚚</span> <a href="{% url 'warehouse_movements' %}">Warehouse Movements</a></h2>
             </section>
 
-            <section class="complimentarys">
-                <h2><span class="emoji">🔄</span> <a href="{% url 'products_movements' %}">Products Movements</a></h2>
-            </section>
         </aside>
 
         <section class="content">

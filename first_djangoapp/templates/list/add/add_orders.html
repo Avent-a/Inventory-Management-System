@@ -7,71 +7,15 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'orders/add_orders.css' %}">
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <title>Add Order</title>
-
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 0;
-        }
-    
-        h1, h2 {
-            color: #333;
-            text-align: center;
-        }
-    
-        form {
-            max-width: 500px;
-            margin: 20px auto;
-            padding: 20px;
-            background-color: #fff;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-    
-        label {
-            display: block;
-            margin-bottom: 8px;
-        }
-    
-        select,
-        input,
-        button {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 15px;
-            box-sizing: border-box;
-        }
-    
-        button {
-            background-color: #3498db;
-            color: #fff;
-            border: none;
-            padding: 10px 15px;
-            font-size: 16px;
-            cursor: pointer;
-            border-radius: 4px;
-        }
-    
-        button[type="button"] {
-                background-color: #95a5a6;
-                padding: 10px 15px;
-                font-size: 16px;
-            }
-    
-        #error-message {
-            color: red;
-            margin-top: 15px;
-        }
-    </style>
 </head>
 
 <body>
 
-    <h1>Add Order</h1>
+    <h2>Add Order</h2>
 
     <form method="post" action="{% url 'add_orders' %}">
         {% csrf_token %}
@@ -112,8 +56,8 @@
         <label for="comment">Comment:</label>
         <textarea name="comment" rows="4" cols="50" required></textarea>
 
-        <button type="submit">Add Order</button>
-        <a href="{% url 'index' %}"><button type="button">Go to home</button></a>
+        <p><button type="submit">Add Order</button>
+        <a href="{% url 'orders' %}"><button type="button">Back to Orders List</button></a>
     </form>
 
     <script>

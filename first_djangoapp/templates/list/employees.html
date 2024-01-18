@@ -1,7 +1,8 @@
 {% extends 'index.html' %}
+{% block content %}
 <!DOCTYPE html>
 <html lang="en">
-  {% block content %}
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -21,7 +22,6 @@
     <table>
       <thead>
         <tr>
-          <th>ID</th>
           <th>Name</th>
           <th>Last Name</th>
           <th>Hidden</th>
@@ -30,8 +30,8 @@
       </thead>
       <tbody>
         {% for employee in employees %}
-        <tr class="warehouse-row">
-          <td class="employee-id">{{ employee.id }}</td>
+        <tr data-id="{{ employee.id }}" class="employee-row {% if employee.hidden %}hidden-row{% endif %}"
+          data-hidden-state="{% if employee.hidden %}hidden{% else %}visible{% endif %}">
           <td class="employee-name">{{ employee.name }}</td>
           <td class="employee-lastName">{{ employee.lastName }}</td>
           <td>
@@ -39,7 +39,7 @@
               class="hidden-checkbox">
           </td>
           <td>
-            <a href="{% url 'edit_employees' employee.id %}"><button type="button"  class="button-edit">Edit</button></a>
+            <a href="{% url 'edit_employees' employee.id %}"><button type="button" class="button-edit">Edit</button></a>
           </td>
         </tr>
         {% endfor %}
@@ -50,7 +50,8 @@
     <button type="button" class="Hidden-button">Save changes</button>
     <button type="button" class="Show-hidden-button">Show hidden</button>
   </form>
-  {% endblock %}
+  
 </body>
 
 </html>
+{% endblock %}

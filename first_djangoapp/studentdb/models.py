@@ -28,6 +28,7 @@ class Employee(models.Model):
     name = models.CharField(max_length=50)  # имя сотрудника
     lastName = models.CharField(max_length=50)  # фамилия сотрудника
     hidden = models.BooleanField(default=False)
+    is_admin = models.BooleanField(default=False)
     def __str__(self):
         return f"{self.name} {self.lastName}"
 

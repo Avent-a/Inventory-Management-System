@@ -5,7 +5,7 @@
 {% block content %}
 
 {% load static %}
-<link rel="stylesheet" type="text/css" href="{% static 'employees/edit_employees.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'employees/edit_empoyees.css' %}">
 
 <h2>Edit Employee</h2>
 
@@ -15,7 +15,7 @@
     <input type="text" id="name" name="name" value="{{ employee.name }}" required>
 
     <label for="last_name">Last Name:</label>
-    <input type="text" id="last_name" name="last_name" value="{{ employee.last_name }}" required>
+    <input type="text" id="last_name" name="last_name" value="{{ employee.lastName }}" required>
 
     <button type="submit">Save Changes</button>
     <a href="{% url 'employees' %}"><button type="button">Back to Employees List</button></a>

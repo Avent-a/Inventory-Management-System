@@ -21,8 +21,10 @@ app_name = 'studentdb'
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', views.index, name='index'),  # Empty path for the index page
+    path('', views.login, name='login'),
+    path('index', views.index, name='index'),  # Empty path for the index page
     
+        
     path('warehouse/', views.warehouse, name='warehouse'),
     path('warehouse/add/', views.add_warehouse, name='add_warehouse'),
     path('update_hidden_status/', views.update_hidden_status, name='update_hidden_status'),
@@ -52,5 +54,5 @@ urlpatterns = [
     path('warehouse_movements/add', views.add_warehouse_movement, name='add_warehouse_movement'),
     
     path('products_movements/', views.products_movements, name='products_movements'),
-     path('products_movements/add', views.add_products_movements, name='add_products_movements'),
+    path('products_movements/add', views.add_products_movements, name='add_products_movements'),
 ]

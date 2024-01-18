@@ -2,6 +2,7 @@ import traceback
 from unittest import result
 from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse
+from httplib2 import Authentication
 from jsonschema import ValidationError
 from .models import *
 from django.db import connection
@@ -12,9 +13,19 @@ import logging
 from django.http import HttpResponse, HttpResponseServerError, JsonResponse
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth import authenticate, login as auth_login
+from django.shortcuts import render, redirect
+from django.contrib.auth import login
+from django.contrib.auth.models import User
+
+
 
 
 def index(request):
+    # Получаем информацию о сотруднике из сессии, если она есть
+    employee_id = request.session.get('employee_id')
+
+    # Добавляем остальные данные, которые вы используете в шаблоне
     warehouses = Warehouse.objects.all()
     offices = Office.objects.all()
     employees = Employee.objects.all()
@@ -25,6 +36,7 @@ def index(request):
     products_movements = ProductsMovement.objects.all()
 
     context = {
+        'employee_id': employee_id,
         'warehouses': warehouses,
         'offices': offices,
         'employees': employees,
@@ -34,7 +46,9 @@ def index(request):
         'warehouse_movements': warehouse_movements,
         'products_movements': products_movements,
     }
+
     return render(request, 'index.html', context)
+
 #-------------------------------------------------------------------------------------
 
 def warehouse(request):
@@ -88,7 +102,7 @@ def edit_warehouse(request, warehouse_id):
 
             return redirect('warehouse')
 
-        return render(request, '/home/student/Documents/first_djangoapp/templates/edit/edit_warehouse.html', {'warehouse': warehouse})
+        return render(request, 'edit/edit_warehouse.html', {'warehouse': warehouse})
     except Exception as e:
         # Отображение информации об ошибке
         return HttpResponseServerError(f"Internal Server Error: {str(e)}")
@@ -185,9 +199,10 @@ def add_employees(request):
         name = request.POST['name']
         last_name = request.POST['last_name']
 
-        new_employee = Employee(name=name, last_name=last_name)
+        new_employee = Employee(name=name, lastName=last_name)
         new_employee.save()
         return redirect('employees')
+    
     return render(request, 'add_employees.html')
 
 def update_hidden_status_employees(request):
@@ -219,7 +234,7 @@ def edit_employees(request, employee_id):
             last_name = request.POST['last_name']
 
             employee.name = name
-            employee.last_name = last_name
+            employee.lastName = last_name
             employee.save()
 
             return redirect('employees')
@@ -228,6 +243,24 @@ def edit_employees(request, employee_id):
     except Exception as e:
         # Отображение информации об ошибке
         return HttpResponseServerError(f"Internal Server Error: {str(e)}")
+    
+def login(request):
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        lastName = request.POST.get('lastName')
+
+        try:
+            employee = Employee.objects.get(name=name, lastName=lastName)
+            request.session['employee_id'] = employee.id
+            request.session['is_admin'] = employee.is_admin  # Добавляем атрибут is_admin в сессию
+            return redirect('index')
+        except Employee.DoesNotExist:
+            pass  # Сотрудник не найден
+
+        messages.error(request, 'Неправильное имя или фамилия сотрудника.')
+
+    return render(request, 'login.html')
+
 #-------------------------------------------------------------------------------------
 
 def orders(request):

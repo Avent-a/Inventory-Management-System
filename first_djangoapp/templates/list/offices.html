@@ -22,7 +22,6 @@
         <table>
             <thead>
                 <tr>
-                    <th>ID</th>
                     <th>Address</th>
                     <th>Area</th>
                     <th>Phone</th>
@@ -33,7 +32,6 @@
             <tbody>
                 {% for office in offices %}
                 <tr data-id="{{ office.id }}" class="office-row {% if office.hidden %}hidden-row{% endif %}" data-hidden-state="{% if office.hidden %}hidden{% else %}visible{% endif %}">
-                    <td>{{ office.id }}</td>
                     <td>{{ office.address }}</td>
                     <td>{{ office.area }}</td>
                     <td>{{ office.phone }}</td>

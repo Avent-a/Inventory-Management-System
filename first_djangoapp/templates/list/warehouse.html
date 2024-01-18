@@ -25,7 +25,6 @@
     <table>
       <thead>
         <tr>
-          <th>Id</th>
           <th>Address</th>
           <th>Phone</th>
           <th>Hidden</th>
@@ -36,7 +35,6 @@
         {% for warehouse in warehouses %}
         <tr data-id="{{ warehouse.id }}" class="warehouse-row {% if warehouse.hidden %}hidden-row{% endif %}"
           data-hidden-state="{% if warehouse.hidden %}hidden{% else %}visible{% endif %}">
-          <td>{{ warehouse.id }}</td>
           <td class="address">{{ warehouse.address }}</td>
           <td class="phone">{{ warehouse.phone }}</td>
           <td>
