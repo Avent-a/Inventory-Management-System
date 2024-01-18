@@ -1,5 +1,8 @@
 {% extends 'index.html' %}
 {% block content %}
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'components/add_components.css' %}">
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <div class="form-container">
         <h2>Add Component</h2>
 
@@ -13,68 +16,9 @@
 
             <div class="form-group">
                 <button type="submit" class="btn btn-primary">Add</button>
-                <a href="{% url 'components' %}"><button type="button">Go to home</button></a>
+                <a href="{% url 'components' %}"><button type="button">Back to Components List</button></a>
             </div>
         </form>
     </div>
-
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 0;
-        }
-    
-        h1, h2 {
-            color: #333;
-            text-align: center;
-        }
-    
-        form {
-            max-width: 500px;
-            margin: 20px auto;
-            padding: 20px;
-            background-color: #fff;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-    
-        label {
-            display: block;
-            margin-bottom: 8px;
-        }
-    
-        select,
-        input,
-        button {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 15px;
-            box-sizing: border-box;
-        }
-    
-        button {
-            background-color: #3498db;
-            color: #fff;
-            border: none;
-            padding: 10px 15px;
-            font-size: 16px;
-            cursor: pointer;
-            border-radius: 4px;
-        }
-    
-        button[type="button"] {
-                background-color: #95a5a6;
-                padding: 10px 15px;
-                font-size: 16px;
-            }
-    
-        #error-message {
-            color: red;
-            margin-top: 15px;
-        }
-    </style>
 
 {% endblock %}
