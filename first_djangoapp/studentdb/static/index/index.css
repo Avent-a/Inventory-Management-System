@@ -58,3 +58,37 @@ main {
         width: 100%;
     }
 }
+
+.header-video {
+    width: 100%;
+    height: auto;
+    max-height: 50vh;
+}
+
+.header-container {
+    position: relative;
+}
+
+h1 {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1;
+    color: white;
+}
+
+.footer-container {
+    position: relative;
+}
+
+.slider-container {
+    width: 100%;
+    max-height: 50vh; /* Замените на нужное значение */
+    overflow: hidden;
+}
+
+.slider img {
+    width: 100%;
+    height: auto;
+}

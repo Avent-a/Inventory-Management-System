@@ -58,6 +58,17 @@ def category(request):
     return render(request, 'category.html', {
         'categorys' : categorys
     })
+
+def add_category(request):
+    if request.method == 'POST':
+        name = request.POST['name']
+
+        new_category = Category(name=name)
+        new_category.save()
+        return redirect('category')
+
+    return render(request, 'add_category.html')
+
 #-------------------------------------------------------------------------------------
 
 def warehouse(request):

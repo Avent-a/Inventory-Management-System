@@ -9,7 +9,7 @@
   <title>{% block title %} {% endblock %}</title>
 
   {% load static %}
-  <link rel="stylesheet" type="text/css" href="{% static 'components/components.css' %}">
+  <link rel="stylesheet" type="text/css" href="{% static 'category/category.css' %}">
   <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 </head>
 
@@ -43,7 +43,7 @@
       </tbody>
     </table>
 
-    <a href="{% url 'add_components' %}"><button type="button" class="add-button">Add</button></a>
+    <a href="{% url 'add_category' %}"><button type="button" class="add-button">Add</button></a>
     <button type="button" class="Hidden-button">Save changes</button>
     <button type="button" class="Show-hidden-button">Show hidden</button>
   </form>

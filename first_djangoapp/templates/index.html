@@ -8,6 +8,9 @@
 
     {% load static %}
     <link rel="stylesheet" type="text/css" href="{% static 'index/index.css' %}">
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css" />
+    <link rel="stylesheet" type="text/css"
+        href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick-theme.css" />
 </head>
 
 <body>
@@ -19,13 +22,11 @@
 
     <main>
         <aside class="sidebar">
-            <section class="warehouse"></section>
-            <h2><span class="emoji">🏬</span> <a href="{% url 'warehouse' %}">Warehouses</a></h2>
+            <section class="warehouse">
+                <h2><span class="emoji">🏬</span> <a href="{% url 'warehouse' %}">Warehouses</a></h2>
             </section>
 
-
             {% if request.session.is_admin %}
-
             <section class="offices">
                 <h2><span class="emoji">🏢</span> <a href="{% url 'offices' %}">Offices</a></h2>
             </section>
@@ -54,12 +55,11 @@
                 <h2><span class="emoji">🔄</span> <a href="{% url 'products_movements' %}">Products Movements</a></h2>
             </section>
 
-        {% endif %}
+            {% endif %}
 
             <section class="warehouse-movements">
                 <h2><span class="emoji">🚚</span> <a href="{% url 'warehouse_movements' %}">Warehouse Movements</a></h2>
             </section>
-
         </aside>
 
         <section class="content">
@@ -68,9 +68,41 @@
         </section>
     </main>
 
+        <!-- Упоминание компании ASD Labs -->
+        <p>Powered by ASD Labs</p>
+    </div>
+
+    <!-- Футер -->
     <footer>
-        <!-- ваш футер -->
+        <div class="footer-container">
+             <!-- Добавление слайдера -->
+        <div class="slider-container">
+            <div class="slider">
+                <!-- Изображения для слайдов -->
+                <div><img src="{% static 'images/slide2.jpg' %}" alt="Slide 2"></div>
+                <div><img src="{% static 'images/slide3.jpg' %}" alt="Slide 3"></div>
+                <!-- Добавьте свои изображения и альтернативный текст, как необходимо -->
+            </div>
+        </div>
+
+        <!-- Упоминание компании ASD Labs -->
+        <p>Powered by ASD Labs</p>
+        </div>
     </footer>
+
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
+
+    <!-- Инициализация слайдера с автоматическим переключением -->
+    <script>
+        $(document).ready(function () {
+            $('.slider').slick({
+                autoplay: true,
+                autoplaySpeed: 3000, // Время в миллисекундах между переключениями
+            });
+        });
+    </script>
+
 </body>
 
 </html>

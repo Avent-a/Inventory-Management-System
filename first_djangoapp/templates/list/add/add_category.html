@@ -1,0 +1,24 @@
+{% extends 'index.html' %}
+{% block content %}
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'category/add_category.css' %}">
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<div class="form-container">
+    <h2>Add Product</h2>
+
+    <form method="post" action="{% url 'add_category' %}">
+        {% csrf_token %}
+
+        <div class="form-group">
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name" required>
+        </div>
+
+        <div class="form-group">
+            <button type="submit" class="btn btn-primary">Add</button>
+            <a href="{% url 'category' %}"><button type="button">Back to Categorys List</button></a>
+        </div>
+    </form>
+</div>
+
+{% endblock %}
