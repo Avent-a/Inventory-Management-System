@@ -9,8 +9,6 @@
     {% load static %}
     <link rel="stylesheet" type="text/css" href="{% static 'index/index.css' %}">
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css" />
-    <link rel="stylesheet" type="text/css"
-        href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick-theme.css" />
 </head>
 
 <body>
@@ -68,40 +66,11 @@
         </section>
     </main>
 
-        <!-- Упоминание компании ASD Labs -->
-        <p>Powered by ASD Labs</p>
-    </div>
-
-    <!-- Футер -->
     <footer>
         <div class="footer-container">
-             <!-- Добавление слайдера -->
-        <div class="slider-container">
-            <div class="slider">
-                <!-- Изображения для слайдов -->
-                <div><img src="{% static 'images/slide2.jpg' %}" alt="Slide 2"></div>
-                <div><img src="{% static 'images/slide3.jpg' %}" alt="Slide 3"></div>
-                <!-- Добавьте свои изображения и альтернативный текст, как необходимо -->
-            </div>
-        </div>
-
-        <!-- Упоминание компании ASD Labs -->
-        <p>Powered by ASD Labs</p>
+            <p>Powered by ASD Labs</p>
         </div>
     </footer>
-
-    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
-
-    <!-- Инициализация слайдера с автоматическим переключением -->
-    <script>
-        $(document).ready(function () {
-            $('.slider').slick({
-                autoplay: true,
-                autoplaySpeed: 3000, // Время в миллисекундах между переключениями
-            });
-        });
-    </script>
 
 </body>
 
