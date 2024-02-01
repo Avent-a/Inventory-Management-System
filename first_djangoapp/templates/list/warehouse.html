@@ -52,9 +52,42 @@
     <a href="{% url 'add_warehouse' %}"><button type="button" class="add-button">Add</button></a>
     <button type="button" class="Hidden-button">Save changes</button>
     <button type="button" class="Show-hidden-button">Show hidden</button>
+    
+    <!-- Add the Export to Word button -->
+    <a href="{% url 'export_to_word' %}" target="_blank"><button type="button" class="export-button">Export to Word</button></a>
   </form>
 
 </body>
+
+<style>
+  /* Стиль для кнопки "Export to Word" */
+.export-button {
+    background-color: #3498db;
+    /* Цвет фона кнопки "Export to Word" */
+    color: white;
+    /* Цвет текста кнопки "Export to Word" */
+    padding: 10px 16px;
+    /* Внутренний отступ кнопки "Export to Word" */
+    border: none;
+    /* Граница отсутствует */
+    border-radius: 4px;
+    /* Закругление углов кнопки "Export to Word" */
+    cursor: pointer;
+    /* Курсор указателя при наведении */
+    margin-right: 10px;
+    /* Правый отступ для разделения от других кнопок */
+    margin-left: auto;
+    /* Автоматическое выравнивание по правому краю */
+    display: block;
+    /* Элемент блочного уровня */
+}
+
+.export-button:hover {
+    background-color: #2980b9;
+    /* Цвет фона кнопки "Export to Word" при наведении */
+    /* Обновленный цвет для выделения кнопки на hover */
+}
+</style>
 
 </html>
 {% endblock %}

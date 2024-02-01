@@ -1,57 +1,60 @@
 {% extends 'index.html' %}
+
+{% block content %}
 <!DOCTYPE html>
 <html lang="en">
-{% block content %}
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %} {% endblock %}</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Products{% endblock %}</title>
 
-    {% load static %}
-    <link rel="stylesheet" type="text/css" href="{% static 'products/products.css' %}">
-    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+  {% load static %}
+  <link rel="stylesheet" type="text/css" href="{% static 'products/products.css' %}">
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+  <script src="{% static 'products/products.js' %}"></script>
 </head>
 
 <body>
+  <h2>Products</h2>
 
-    <h2>Products</h2>
+  <form>
+    {% csrf_token %}
+    <input type="text" id="searchInput" placeholder="Search...">
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Category</th>
+          <th>Hidden</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for product in products %}
+        <tr class="product-row {% if product.hidden %}hidden-row{% endif %}" data-id="{{ product.id }}">
+          <td class="id">{{ product.id }}</td>
+          <td class="name">{{ product.name }}</td>
+          <td class="category">{{ product.category }}</td>
+          <td>
+            <input type="checkbox" {% if product.hidden %}checked{% endif %} data-product-id="{{ product.id }}"
+              class="hidden-checkbox">
+          </td>
+          <td>
+            <button type="button" class="button-edit">Edit</button>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
 
-    <form>
-        <table>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Name</th>
-                    <th>Category</th>
-                    <th>Hidden</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for product in products %}
-                <tr>
-                    <td>{{ product.id }}</td>
-                    <td>{{ product.name }}</td>
-                    <td>{{ product.category }}</td>
-                    <td>
-                        <input type="checkbox" {% if warehouse.hidden %}checked{% endif %}
-                            data-warehouse-id="{{ product.id }}" class="hidden-checkbox">
-                    </td>
-                    <td>
-                        <button type="button" class="button-edit">Edit</button></a>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+    <a href="{% url 'add_products' %}"><button type="button" class="add-button">Add</button></a>
+    <button type="button" class="Hidden-button">Save changes</button>
+    <button type="button" class="Show-hidden-button">Show hidden</button>
+  </form>
 
-
-        <a href="{% url 'add_products' %}"><button type="button" class="add-button">Add</button></a>
-        <button type="button" class="Hidden-button">Save changes</button>
-        <button type="button" class="Show-hidden-button">Show hidden</button>
-    </form>
-    {% endblock %}
 </body>
 
 </html>
+{% endblock %}

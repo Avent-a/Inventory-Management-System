@@ -17,6 +17,7 @@ from django.contrib.auth import authenticate, login as auth_login
 from django.shortcuts import render, redirect
 from django.contrib.auth import login
 from django.contrib.auth.models import User
+from docx import Document
 
 
 
@@ -126,6 +127,33 @@ def edit_warehouse(request, warehouse_id):
     except Exception as e:
         # Отображение информации об ошибке
         return HttpResponseServerError(f"Internal Server Error: {str(e)}")
+    
+def export_to_word(request):
+    warehouses = Warehouse.objects.all()
+
+    document = Document()
+    document.add_heading('Warehouse Export', level=1)
+
+    table = document.add_table(rows=1, cols=2)
+    table.style = 'Table Grid'
+    
+    # Add table header
+    header_cells = table.rows[0].cells
+    header_cells[0].text = 'Address'
+    header_cells[1].text = 'Phone'
+
+    # Add data to the table
+    for warehouse in warehouses:
+        row_cells = table.add_row().cells
+        row_cells[0].text = warehouse.address
+        row_cells[1].text = warehouse.phone
+
+    # Response with Word document
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+    response['Content-Disposition'] = 'attachment; filename=warehouse_export.docx'
+    document.save(response)
+
+    return response
 #-------------------------------------------------------------------------------------
 
 def product(request):
@@ -147,7 +175,45 @@ def add_products(request):
 
     return render(request, 'add_products.html', {'categories': categories})
 
+def update_hidden_status_products(request):
+    if request.method == 'POST':
+        products_id = request.POST.get('product_id')  # Исправлено на 'products_id'
+        is_hidden_str = request.POST.get('is_hidden')
 
+        # Convert the string "true" to a boolean value
+        is_hidden = is_hidden_str.lower() == 'true'
+
+        try:
+            product = Product.objects.get(pk=products_id)  # Исправлено на Product
+            product.hidden = is_hidden
+            product.save()
+            return JsonResponse({'success': True, 'hidden': product.hidden})
+        except Product.DoesNotExist:  # Исправлено на Product.DoesNotExist
+            return JsonResponse({'success': False, 'error': 'Product not found'})
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)})
+
+    return JsonResponse({'success': False, 'error': 'Invalid request method'})
+
+def edit_products(request, products_id):
+    try:
+        products = get_object_or_404(Warehouse, pk=products_id)
+
+        if request.method == 'POST':
+            # Обработка отправки формы для обновления деталей склада
+            address = request.POST['address']
+            phone = request.POST['phone']
+
+            warehouse.address = address
+            warehouse.phone = phone
+            warehouse.save()
+
+            return redirect('warehouse')
+
+        return render(request, 'edit/edit_warehouse.html', {'warehouse': warehouse})
+    except Exception as e:
+        # Отображение информации об ошибке
+        return HttpResponseServerError(f"Internal Server Error: {str(e)}")
 #-------------------------------------------------------------------------------------
 
 def offices(request):

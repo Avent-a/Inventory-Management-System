@@ -31,10 +31,12 @@ urlpatterns = [
     path('warehouse/add/', views.add_warehouse, name='add_warehouse'),
     path('update_hidden_status/', views.update_hidden_status, name='update_hidden_status'),
     path('edit_warehouse/<int:warehouse_id>/', views.edit_warehouse, name='edit_warehouse'),
+    path('export/', views.export_to_word, name='export_to_word'),
     path('calculate-total-quantity/', views.calculate_total_quantity, name='calculate_total_quantity'),
     
     path('products/', views.product, name='products'),
     path('products/add/', views.add_products, name='add_products'),
+     path('update_hidden_status_products/', views.update_hidden_status_products, name='update_hidden_status_products'),
 
     path('offices/', views.offices, name='offices'),
     path('add_offices/', views.add_offices, name='add_offices'),
