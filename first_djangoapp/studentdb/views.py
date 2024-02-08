@@ -177,43 +177,44 @@ def add_products(request):
 
 def update_hidden_status_products(request):
     if request.method == 'POST':
-        products_id = request.POST.get('product_id')  # Исправлено на 'products_id'
+        products_id = request.POST.get('product_id')  # Corrected to 'products_id'
         is_hidden_str = request.POST.get('is_hidden')
 
         # Convert the string "true" to a boolean value
         is_hidden = is_hidden_str.lower() == 'true'
 
         try:
-            product = Product.objects.get(pk=products_id)  # Исправлено на Product
+            product = Product.objects.get(pk=products_id)  # Corrected to Product
             product.hidden = is_hidden
             product.save()
             return JsonResponse({'success': True, 'hidden': product.hidden})
-        except Product.DoesNotExist:  # Исправлено на Product.DoesNotExist
+        except Product.DoesNotExist:  # Corrected to Product.DoesNotExist
             return JsonResponse({'success': False, 'error': 'Product not found'})
         except Exception as e:
             return JsonResponse({'success': False, 'error': str(e)})
 
     return JsonResponse({'success': False, 'error': 'Invalid request method'})
 
-def edit_products(request, products_id):
+def edit_products(request, product_id):
     try:
-        products = get_object_or_404(Warehouse, pk=products_id)
+        product = get_object_or_404(Product, pk=product_id)
+        categories = Category.objects.all()  # Получение всех категорий
 
         if request.method == 'POST':
-            # Обработка отправки формы для обновления деталей склада
-            address = request.POST['address']
-            phone = request.POST['phone']
+            # Обработка отправки формы для обновления деталей продукта
+            name = request.POST['name']
+            category_id = request.POST['category']
 
-            warehouse.address = address
-            warehouse.phone = phone
-            warehouse.save()
+            product.name = name
+            product.category_id = category_id
+            product.save()
 
-            return redirect('warehouse')
+            return redirect('products')
 
-        return render(request, 'edit/edit_warehouse.html', {'warehouse': warehouse})
+        return render(request, 'edit/edit_products.html', {'product': product, 'categories': categories})
     except Exception as e:
-        # Отображение информации об ошибке
         return HttpResponseServerError(f"Internal Server Error: {str(e)}")
+
 #-------------------------------------------------------------------------------------
 
 def offices(request):
@@ -351,9 +352,7 @@ def login(request):
 
 def orders(request):
     orders = Order.objects.all()
-    return render(request, 'orders.html', {
-        'orders': orders
-    })
+    return render(request, 'orders.html', {'orders': orders})
 
 def add_orders(request):
     employees = Employee.objects.all()
@@ -386,6 +385,41 @@ def add_orders(request):
         return redirect('orders')
 
     return render(request, 'add_orders.html', {'employees': employees, 'offices': offices, 'products': products})
+
+def edit_orders(request, order_id):
+    try:
+        order = get_object_or_404(Order, pk=order_id)
+        employees = Employee.objects.all()
+        offices = Office.objects.all()
+        products = Product.objects.all()
+
+        if request.method == 'POST':
+            date = request.POST.get('date')
+            status = request.POST.get('status')
+            employee_id = request.POST.get('employee')
+            product_id = request.POST.get('product')
+            comment = request.POST.get('comment')
+            office_id = request.POST.get('office')
+
+            employee = Employee.objects.get(pk=employee_id)
+            product = Product.objects.get(pk=product_id)
+            office = Office.objects.get(pk=office_id)
+
+            order.date = date
+            order.status = status
+            order.employee = employee
+            order.product = product
+            order.comment = comment
+            order.IdOffice = office
+            order.save()
+
+            return redirect('orders')
+
+        return render(request, 'edit/edit_orders.html', {'order': order, 'employees': employees, 'offices': offices, 'products': products})
+    except Exception as e:
+        # Отображение информации об ошибке
+        return HttpResponseServerError(f"Internal Server Error: {str(e)}")
+
 #-------------------------------------------------------------------------------------
 
 def components(request):

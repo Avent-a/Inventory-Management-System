@@ -36,7 +36,9 @@ urlpatterns = [
     
     path('products/', views.product, name='products'),
     path('products/add/', views.add_products, name='add_products'),
-     path('update_hidden_status_products/', views.update_hidden_status_products, name='update_hidden_status_products'),
+    path('update_hidden_status_products/', views.update_hidden_status_products, name='update_hidden_status_products'),
+    path('edit_products/<int:product_id>/', views.edit_products, name='edit_products'),
+
 
     path('offices/', views.offices, name='offices'),
     path('add_offices/', views.add_offices, name='add_offices'),
@@ -50,6 +52,7 @@ urlpatterns = [
 
     path('orders/', views.orders, name='orders'),
     path('add_orders/add', views.add_orders, name='add_orders'),
+    path('edit_orders/<int:order_id>/', views.edit_orders, name='edit_orders'),
     
     path('components/', views.components, name='components'),
     path('components/add/', views.add_components, name='add_components'),

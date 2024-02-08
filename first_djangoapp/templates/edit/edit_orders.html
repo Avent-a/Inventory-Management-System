@@ -1,0 +1,50 @@
+{% extends 'index.html' %}
+
+{% block content %}
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'orders/edit_oders.css' %}">
+
+<h2>Edit order</h2>
+
+<form method="post">
+    {% csrf_token %}
+    <label for="date">Date:</label>
+    <input type="date" id="date" name="date" value="{{ order.date }}" required>
+
+    <label for="status">Status:</label>
+        <select name="status" required>
+            <option value="PENDING">В ожидании</option>
+            <option value="PROCESSING">В обработке</option>
+            <option value="COMPLETED">Завершен</option>
+            <option value="CANCELLED">Отменен</option>
+        </select>
+
+    <label for="employee">Employee:</label>
+    <select id="employee" name="employee">
+        {% for employee in employees %}
+        <option value="{{ employee.id }}" {% if order.employee_id == employee.id %}selected{% endif %}>{{ employee.name }}</option>
+        {% endfor %}
+    </select>
+
+    <label for="product">Product:</label>
+    <select id="product" name="product">
+        {% for product in products %}
+        <option value="{{ product.id }}" {% if order.product_id == product.id %}selected{% endif %}>{{ product.name }}</option>
+        {% endfor %}
+    </select>
+
+    <label for="comment">Comment:</label>
+    <textarea id="comment" name="comment" required>{{ order.comment }}</textarea>
+
+    <label for="office">Office:</label>
+    <select id="office" name="office">
+        {% for office in offices %}
+        <option value="{{ office.id }}" {% if order.IdOffice_id == office.id %}selected{% endif %}>{{ office.name }}</option>
+        {% endfor %}
+    </select>
+
+    <button type="submit">Save Changes</button>
+    <a href="{% url 'orders' %}"><button type="button">Back to Orders List</button></a>
+</form>
+
+{% endblock %}

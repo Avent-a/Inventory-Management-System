@@ -1,22 +1,19 @@
 {% extends 'index.html' %}
-<!DOCTYPE html>
-<html lang="en">
 
 {% block content %}
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %} {% endblock %}</title>
-
+    <title>{% block title %}Orders{% endblock %}</title>
     {% load static %}
     <link rel="stylesheet" type="text/css" href="{% static 'orders/orders.css' %}">
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="{% static 'orders/orders.js' %}"></script>
 </head>
-
 <body>
-
     <h2>Orders</h2>
+    <!-- Search input field -->
+    <input type="text" id="searchInput" placeholder="Search...">
     <form>
         <table>
             <thead>
@@ -33,7 +30,7 @@
             </thead>
             <tbody>
                 {% for order in orders %}
-                <tr>
+                <tr class="order-row {% if order.hidden %}hidden-row{% endif %}" data-id="{{ order.id }}">
                     <td>{{ order.date }}</td>
                     <td>{{ order.status }}</td>
                     <td>{{ order.employee }}</td>
@@ -41,23 +38,20 @@
                     <td>{{ order.comment }}</td>
                     <td>{{ order.IdOffice }}</td>
                     <td>
-                        <input type="checkbox" {% if warehouse.hidden %}checked{% endif %}
-                            data-warehouse-id="{{ warehouse.id }}" class="hidden-checkbox">
+                        <input type="checkbox" {% if order.hidden %}checked{% endif %}
+                            data-warehouse-id="{{ order.id }}" class="hidden-checkbox">
                     </td>
                     <td>
-                        <button type="button" class="button-edit">Edit</button></a>
+                        <a href="{% url 'edit_orders' order.id %}"><button type="button" class="button-edit">Edit</button></a>
                     </td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
-
-
         <a href="{% url 'add_orders' %}"><button type="button" class="add-button">Add</button></a>
         <button type="button" class="Hidden-button">Save changes</button>
         <button type="button" class="Show-hidden-button">Show hidden</button>
     </form>
-    {% endblock %}
 </body>
-
+{% endblock %}
 </html>

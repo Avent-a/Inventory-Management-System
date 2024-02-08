@@ -24,7 +24,6 @@
     <table>
       <thead>
         <tr>
-          <th>ID</th>
           <th>Name</th>
           <th>Category</th>
           <th>Hidden</th>
@@ -34,7 +33,6 @@
       <tbody>
         {% for product in products %}
         <tr class="product-row {% if product.hidden %}hidden-row{% endif %}" data-id="{{ product.id }}">
-          <td class="id">{{ product.id }}</td>
           <td class="name">{{ product.name }}</td>
           <td class="category">{{ product.category }}</td>
           <td>
@@ -42,7 +40,7 @@
               class="hidden-checkbox">
           </td>
           <td>
-            <button type="button" class="button-edit">Edit</button>
+            <a href="{% url 'edit_products' product.id %}"><button type="button" class="button-edit">Edit</button></a>
           </td>
         </tr>
         {% endfor %}
