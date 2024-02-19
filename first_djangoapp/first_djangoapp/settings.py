@@ -81,12 +81,12 @@ WSGI_APPLICATION = 'first_djangoapp.wsgi.application'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
 DATABASES = {
-      'default': {
+'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'studentdb',
-        'USER': 'student',
-        'PASSWORD': 'acd123',
-        'HOST': '192.168.218.115',
+        'USER': 'admin',
+        'PASSWORD': 'Flo123!@#',
+        'HOST': '127.0.0.1',
         'PORT': '3306',
     } 
 }
