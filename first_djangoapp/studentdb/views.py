@@ -1,3 +1,4 @@
+import io
 import traceback
 from unittest import result
 from django.shortcuts import get_object_or_404, render, redirect
@@ -568,6 +569,7 @@ def add_warehouse_movement(request):
     }
 
     return render(request, 'add_warehouse_movements.html', context)
+
     
 #-------------------------------------------------------------------------------------
 

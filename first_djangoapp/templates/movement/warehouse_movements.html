@@ -193,50 +193,86 @@
 </head>
 
 <body>
-
-
   <h2>Warehouse Movements</h2>
+  
+  <!-- Форма для выбора промежутка дат и экспорта в Word -->
+  <form id="export-form">
+      <label for="start-date">Start Date:</label>
+      <input type="date" id="start-date">
 
-  <form>
-    <table>
+      <label for="end-date">End Date:</label>
+      <input type="date" id="end-date">
+
+      <button type="submit" id="export-button">Export to Word</button>
+  </form>
+
+  <!-- Таблица с записями о перемещениях на складе -->
+  <table>
       <thead>
-        <tr>
-          <th>Commentary</th>
-          <th>Quantity</th>
-          <th>Components</th>
-          <th>IdWarehousePlus</th>
-          <th>IdWarehouseMinus</th>
-          <th>Date</th>
-          <th>Hidden</th>
-          <th>Actions</th>
-        </tr>
+          <tr>
+              <th>Commentary</th>
+              <th>Quantity</th>
+              <th>Date</th>
+          </tr>
       </thead>
       <tbody>
-        {% for warehouse_movement in warehouse_movements %}
-        <tr>
-          <td>{{ warehouse_movement.Comment }}</td>
-          <td>{{ warehouse_movement.quantity }}</td>
-          <td>{{ warehouse_movement.IdComponents }}</td>
-          <td>{{ warehouse_movement.IdWarehousePlus }}</td>
-          <td>{{ warehouse_movement.IdWarehouseMinus }}</td>
-          <td>{{ warehouse_movement.date }}</td>
-          <td>
-            <input type="checkbox" {% if warehouse.hidden %}checked{% endif %} data-warehouse-id="{{ warehouse.id }}"
-              class="hidden-checkbox">
-          </td>
-          <td>
-            <button type="button"  class="button-edit">Edit</button>
-          </td>
-        </tr>
-        {% endfor %}
+          {% for warehouse_movement in warehouse_movements %}
+          <tr>
+              <td>{{ warehouse_movement.comment }}</td>
+              <td>{{ warehouse_movement.quantity }}</td>
+              <td>{{ warehouse_movement.date }}</td>
+          </tr>
+          {% endfor %}
       </tbody>
-    </table>
-
-    <a href="{% url 'add_warehouse_movement' %}"><button type="button" class="add-button">Add</button></a>
-    <button type="button" class="Hidden-button">Save changes</button>
-    <button type="button" class="Show-hidden-button">Show hidden</button>
-  </form>
-  {% endblock %}
+  </table>
 </body>
-
 </html>
+
+<script>
+document.getElementById('export-form').addEventListener('submit', function(event) {
+  event.preventDefault();
+
+  var startDate = document.getElementById('start-date').value;
+  var endDate = document.getElementById('end-date').value;
+
+  // Отправляем запрос на сервер с выбранными датами для экспорта
+  fetch('/export', {
+      method: 'POST',
+      headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': getCookie('csrftoken')  // Добавляем CSRF-токен
+      },
+      body: JSON.stringify({
+          start_date: startDate,
+          end_date: endDate
+      })
+  }).then(response => {
+      // Обработка ответа от сервера
+      if (response.ok) {
+          // Если запрос успешен, переходим по ссылке на скачивание файла Word
+          window.location.href = response.url;
+      } else {
+          console.error('Export failed');
+      }
+  }).catch(error => {
+      console.error('Error exporting:', error);
+  });
+});
+
+// Функция для получения CSRF-токена из cookie
+function getCookie(name) {
+  var cookieValue = null;
+  if (document.cookie && document.cookie !== '') {
+      var cookies = document.cookie.split(';');
+      for (var i = 0; i < cookies.length; i++) {
+          var cookie = cookies[i].trim();
+          // Получаем CSRF-токен из cookie
+          if (cookie.substring(0, name.length + 1) === (name + '=')) {
+              cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+              break;
+          }
+      }
+  }
+  return cookieValue;
+}
+</script>
